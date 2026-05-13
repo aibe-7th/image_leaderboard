@@ -17,6 +17,10 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
         return res.status(400).json({ error: "name, image_file, prompt는 필수입니다." });
     }
 
+    if (prompt.length > 50) {
+        return res.status(400).json({ error: "프롬프트는 한글 기준 50자를 초과할 수 없습니다." });
+    }
+
     try {
         // 1~100 사이 랜덤 점수 부여 (소수점 둘째자리)
         const prompt_score = parseFloat((Math.random() * 99 + 1).toFixed(2));
