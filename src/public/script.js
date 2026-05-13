@@ -75,8 +75,11 @@ form.addEventListener("submit", async (e) => {
     statusEl.textContent = "";
     statusEl.className = "mt-3 text-center fw-semibold"; // Reset classes
 
+    const nameValue = document.getElementById("name").value.trim();
+    sessionStorage.setItem("savedName", nameValue);
+
     const formData = new FormData();
-    formData.append("name", document.getElementById("name").value.trim());
+    formData.append("name", nameValue);
     formData.append("image_file", document.getElementById("image_file").files[0]);
     formData.append("prompt", document.getElementById("prompt").value.trim());
     formData.append("prompt_score", document.getElementById("prompt_score").value);
@@ -96,6 +99,12 @@ form.addEventListener("submit", async (e) => {
         statusEl.textContent = "✅ 제출 완료!";
         statusEl.classList.add("text-success");
         form.reset();
+        
+        // 폼 리셋 후 저장된 이름 다시 세팅
+        if (sessionStorage.getItem("savedName")) {
+            document.getElementById("name").value = sessionStorage.getItem("savedName");
+        }
+        
         await loadLeaderboard();
     } catch (error) {
         console.error("제출 실패:", error);
@@ -107,6 +116,12 @@ form.addEventListener("submit", async (e) => {
         loadingOverlay.classList.add("d-none");
     }
 });
+
+// 페이지 로드 시 sessionStorage에서 이름 가져와 기본값으로 설정
+const savedName = sessionStorage.getItem("savedName");
+if (savedName) {
+    document.getElementById("name").value = savedName;
+}
 
 // 초기 로드
 loadLeaderboard();
