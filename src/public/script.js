@@ -25,6 +25,9 @@ async function loadLeaderboard() {
         const response = await axios.get(`/api/leaderboard?sort=${currentSort}`);
         const rows = response.data;
         
+        sortPromptBtn.innerHTML = currentSort === "prompt" ? "프롬프트 점수 ⬇️" : "프롬프트 점수 ↕️";
+        sortImageBtn.innerHTML = currentSort === "image" ? "이미지 점수 ⬇️" : "이미지 점수 ↕️";
+        
         if (!Array.isArray(rows) || rows.length === 0) {
             boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
             return;
