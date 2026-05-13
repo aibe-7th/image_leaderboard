@@ -18,13 +18,15 @@
                 </ol>
             </nav>
 
-            <div class="row g-5">
-                <!-- Left: Image and Instructions -->
-                <div class="col-lg-6">
-                    <div class="card bg-black border-secondary rounded-4 overflow-hidden mb-4">
-                        <img src="/api/image/<%= challenge.result_image %>" class="img-fluid" alt="Challenge Image">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <!-- Challenge Image -->
+                    <div class="card bg-black border-secondary rounded-4 overflow-hidden mb-4 shadow-lg">
+                        <img src="/api/image/<%= challenge.result_image %>" class="img-fluid w-100" alt="Challenge Image">
                     </div>
-                    <div class="alert alert-info bg-dark border-info border-opacity-25 rounded-4 p-4">
+
+                    <!-- Guide -->
+                    <div class="alert alert-info bg-dark border-info border-opacity-25 rounded-4 p-4 mb-5 shadow-sm">
                         <h4 class="h5 fw-bold text-info mb-3">어떻게 참여하나요?</h4>
                         <ol class="small text-secondary mb-0">
                             <li class="mb-2">위 이미지를 보고 어떤 프롬프트로 만들어졌을지 추측해보세요.</li>
@@ -33,40 +35,37 @@
                             <li>가장 유사하다고 생각되는 이미지와 프롬프트를 아래 폼에 제출하세요!</li>
                         </ol>
                     </div>
-                </div>
 
-                <!-- Right: Submission and Leaderboard -->
-                <div class="col-lg-6">
-                    <!-- Submission Form -->
-                    <div class="card bg-black border-info border-opacity-25 rounded-4 p-4 shadow-lg mb-5">
-                        <h2 class="h4 text-info mb-4 fw-bold">🚀 도전하기</h2>
+                    <!-- Form -->
+                    <div class="card bg-black border-info border-opacity-25 rounded-4 p-4 p-md-5 shadow-lg mb-5">
+                        <h2 class="h4 text-info mb-4 fw-bold text-center">🚀 지금 바로 도전하기</h2>
                         <form id="submitForm">
                             <input type="hidden" id="challenge_id" value="<%= challenge.id %>">
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label class="form-label text-secondary small">닉네임</label>
-                                <input id="name" type="text" class="form-control bg-dark text-white border-secondary"
+                                <input id="name" type="text" class="form-control bg-dark text-white border-secondary py-2"
                                     required>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label class="form-label text-secondary small">나의 결과 이미지</label>
                                 <input id="image_file" type="file" accept="image/*"
-                                    class="form-control bg-dark text-white border-secondary" required>
+                                    class="form-control bg-dark text-white border-secondary py-2" required>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label class="form-label text-secondary small">추측한 프롬프트 (10-100자)</label>
-                                <textarea id="prompt" class="form-control bg-dark text-white border-secondary" rows="3"
+                                <textarea id="prompt" class="form-control bg-dark text-white border-secondary" rows="4"
                                     minlength="10" maxlength="100" placeholder="위 이미지를 생성했을 것으로 예상되는 프롬프트를 입력하세요."
                                     required></textarea>
                             </div>
                             <button type="submit" id="submitBtn"
-                                class="btn btn-info btn-lg w-100 text-white fw-bold">채점하기</button>
+                                class="btn btn-info btn-lg w-100 text-white fw-bold py-3">채점하기</button>
                             <div id="status" class="mt-3 text-center small"></div>
                         </form>
                     </div>
 
-                    <!-- Leaderboard -->
-                    <div class="leaderboard-section">
-                        <h3 class="h5 fw-bold text-info mb-4">🏆 RANKING</h3>
+                    <!-- Ranking -->
+                    <div class="leaderboard-section p-4 bg-dark rounded-4 border border-secondary border-opacity-25 shadow-sm">
+                        <h3 class="h4 fw-bold text-info mb-4 text-center">🏆 RANKING</h3>
                         <div class="table-responsive">
                             <table
                                 class="table table-dark table-hover align-middle leaderboard-table border-secondary border-opacity-25">
@@ -103,8 +102,8 @@
                                             <% }) %>
                                                 <% } else { %>
                                                     <tr>
-                                                        <td colspan="4" class="text-center py-3 text-secondary small">아직
-                                                            도전자가 없습니다. 첫 번째 주인공이 되어보세요!</td>
+                                                        <td colspan="4" class="text-center py-5 text-secondary small">아직
+                                                            도전자가 없습니다. <br> 첫 번째 주인공이 되어보세요!</td>
                                                     </tr>
                                                     <% } %>
                                 </tbody>
