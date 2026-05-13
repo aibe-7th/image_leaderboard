@@ -30,7 +30,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
 
         const tasks = Array.from({ length: 3 }).map(() =>
             modelWithStructuredOutput.invoke([
-                ["system", "당신은 프롬프트 유사도 평가 전문가입니다. 정답과 사용자의 프롬프트를 비교하여 0~50점 사이의 점수만 산출하세요. 별도의 설명은 절대 하지 마세요."],
+                ["system", "당신은 프롬프트 유사도 평가 전문가입니다. 정답과 사용자의 프롬프트 간의 의미론적 유사성, 키워드 일치도, 분위기 및 스타일 재현력을 엄격하게 평가하여 0.00~50.00점 사이의 점수를 산출하세요. 변별력을 높이기 위해 소수점 둘째 자리까지 정밀하게 평가해야 하며, 아주 미세한 차이도 점수에 반영하세요. 별도의 설명 없이 숫자(점수)만 포함된 JSON을 반환하세요."],
                 ["human", `정답 프롬프트: ${finalTargetAnswer}\n사용자 프롬프트: ${userPrompt}`]
             ])
         );
