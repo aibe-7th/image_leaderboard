@@ -15,7 +15,20 @@ async function loadLeaderboard() {
             return;
         }
         
-        boardBody.innerHTML = rows.map((r, i) => `
+        boardBody.innerHTML = rows.map((r, i) => {
+            const dateObj = new Date(r.created_at);
+            const formattedDate = dateObj.toLocaleString('ko-KR', { 
+                timeZone: 'Asia/Seoul',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            
+            return `
             <tr>
                 <td class="fw-bold text-warning">${i + 1}</td>
                 <td>${r.name}</td>
@@ -23,9 +36,9 @@ async function loadLeaderboard() {
                 <td style="max-width:200px; word-break:break-word;">${r.prompt}</td>
                 <td>${r.prompt_score}</td>
                 <td>${r.image_score}</td>
-                <td>${r.created_at}</td>
+                <td>${formattedDate}</td>
             </tr>
-        `).join("");
+        `}).join("");
     } catch (error) {
         console.error("리더보드 로드 실패:", error);
         boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">조회 실패</td></tr>`;

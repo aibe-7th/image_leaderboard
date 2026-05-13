@@ -3,7 +3,7 @@ create table public.leaderboard (
     name         text          not null,
     image_name   text          not null,
     prompt       text          not null,
-    created_at   date          not null default current_date,
+    created_at   timestamptz   not null default now(),
     prompt_score numeric(5, 2) not null default 0,
     image_score  numeric(5, 2) not null default 0
 );
