@@ -67,20 +67,21 @@ form.addEventListener("submit", async (e) => {
     statusEl.textContent = "";
     statusEl.className = "mt-3 text-center fw-semibold"; // Reset classes
 
-    const payload = {
-        name: document.getElementById("name").value.trim(),
-        image_name: document.getElementById("image_name").value.trim(),
-        prompt: document.getElementById("prompt").value.trim(),
-        prompt_score: parseFloat(document.getElementById("prompt_score").value),
-        image_score: parseFloat(document.getElementById("image_score").value),
-    };
+    const formData = new FormData();
+    formData.append("name", document.getElementById("name").value.trim());
+    formData.append("image_file", document.getElementById("image_file").files[0]);
+    formData.append("prompt", document.getElementById("prompt").value.trim());
+    formData.append("prompt_score", document.getElementById("prompt_score").value);
+    formData.append("image_score", document.getElementById("image_score").value);
 
     loadingOverlay.classList.remove("d-none");
 
     try {
         // API 요청과 최소 3초 대기를 동시에 실행 (스피너 최소 3초 노출 보장)
         const [response] = await Promise.all([
-            axios.post("/api/submit", payload),
+            axios.post("/api/submit", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            }),
             new Promise(resolve => setTimeout(resolve, 3000))
         ]);
         
