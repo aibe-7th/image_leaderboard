@@ -18,9 +18,9 @@
 # Features
 
 ## AI 프롬프트 채점 시스템 (AI Prompt Scoring)
-- **기술 스택**: LangChain JS, Google Gemini 2.5 Flash Lite
+- **기술 스택**: LangChain JS, Google Gemma 4 26B
 - **채점 로직**:
     - 사용자가 입력한 프롬프트와 정답 프롬프트(`TODAY_ANSWER`) 간의 의미적 유사도를 분석합니다.
-    - **Self-Consistency**: 신뢰도 높은 점수를 산출하기 위해 동일한 비교를 5회 수행한 후 평균값을 사용합니다.
+    - **Self-Consistency**: 신뢰도 높은 점수를 산출하기 위해 동일한 비교를 3회 수행한 후 평균값을 사용합니다.
     - **Structured Output**: AI로부터 점수(0~50)와 이유를 구조화된 JSON 형태로 수신하여 정합성을 보장합니다.
 - **점수 표준화**: 프롬프트 유사도 점수는 0~50점 사이로 표준화되어 리더보드에 반영됩니다.
