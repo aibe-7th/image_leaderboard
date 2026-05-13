@@ -1,3 +1,4 @@
+import express from "express";
 import { getOpenChallenges } from "../db.js";
 
 const router = express.Router();
