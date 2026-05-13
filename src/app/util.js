@@ -24,6 +24,11 @@ export async function optimizeImage(fileBuffer) {
 export function maskIp(ip) {
     if (!ip) return "unknown";
     
+    // localhost (IPv6 loopback 포함) 처리
+    if (ip === "::1" || ip === "127.0.0.1" || ip.includes("127.0.0.1")) {
+        return "127.0.0.1";
+    }
+    
     // IPv4
     if (ip.includes('.')) {
         const parts = ip.split('.');
@@ -32,12 +37,14 @@ export function maskIp(ip) {
         }
     }
     
-    // IPv6 (보통 앞 2마디 유지)
+    // IPv6
     if (ip.includes(':')) {
         const parts = ip.split(':');
-        if (parts.length > 2) {
-            return `${parts[0]}:${parts[1]}:****:****`;
+        // 주소 마디가 충분할 경우 앞부분 일부 노출
+        if (parts.length > 3) {
+            return `${parts[0]}:${parts[1]}:${parts[2]}:****:****`;
         }
+        return "****:****:****"; // 너무 짧은 IPv6의 경우 전체 마스킹
     }
     
     return ip;
