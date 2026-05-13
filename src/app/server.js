@@ -26,11 +26,16 @@ app.set('trust proxy', true);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 공통 변수 설정 (Base URL)
+// 공통 변수 설정 (Base URL 및 메타데이터)
 app.use((req, res, next) => {
     const protocol = process.env.RENDER ? "https" : req.protocol;
     const host = process.env.RENDER_EXTERNAL_URL || req.get("host");
     res.locals.baseUrl = `${protocol}://${host}`;
+    
+    // 기본 메타데이터
+    res.locals.siteName = "Arena";
+    res.locals.title = "이미지 프롬프트를 맞춰라";
+    res.locals.desc = "AI가 생성한 이미지를 보고 원본 프롬프트를 맞춰보세요. 고득점을 획득하고 리더보드에 이름을 올리세요!";
     next();
 });
 
@@ -65,7 +70,11 @@ app.get("/challenge/:id", async (req, res) => {
         }
 
         const { data: leaderboard } = await getLeaderboardData("prompt_score", id);
-        res.render("challenge", { challenge, leaderboard: leaderboard || [] });
+        res.render("challenge", { 
+            challenge, 
+            leaderboard: leaderboard || [],
+            title: `Challenge #${challenge.id}`
+        });
     } catch (err) {
         console.error("SSR 상세 페이지 렌더링 오류:", err);
         res.status(500).send("Internal Server Error");

@@ -1,106 +1,114 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <title>Challenge Admin - Leaderboard</title>
     <%- include('partials/head') %>
-    <style>
-        .admin-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2.5rem;
-            margin-top: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-    </style>
+        <style>
+            .admin-card {
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(15px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                padding: 2.5rem;
+                margin-top: 2rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            }
+        </style>
 </head>
+
 <body class="bg-dark text-light">
     <%- include('partials/nav') %>
 
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="h3 fw-bold text-info mb-0">⚙️ 챌린지 관리자</h1>
-                    <a href="/admin/logout" class="btn btn-outline-danger btn-sm">로그아웃</a>
-                </div>
-                
-                <div class="admin-card fade-in">
-                    <h3 class="h5 mb-4 text-info">✨ 신규 챌린지 등록</h3>
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h3 fw-bold text-info mb-0">⚙️ 챌린지 관리자</h1>
+                        <a href="/admin/logout" class="btn btn-outline-danger btn-sm">로그아웃</a>
+                    </div>
 
-                    <form id="challengeForm">
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">정답 프롬프트</label>
-                            <textarea id="prompt" class="form-control bg-dark text-white border-secondary" rows="2" placeholder="정답 프롬프트를 입력하세요" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">정답 이미지</label>
-                            <input type="file" id="image_file" class="form-control bg-dark text-white border-secondary" accept="image/*" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-secondary small">시작일</label>
-                                <input type="date" id="start_date" class="form-control bg-dark text-white border-secondary" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-secondary small">종료일</label>
-                                <input type="date" id="end_date" class="form-control bg-dark text-white border-secondary" required>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-secondary small">노출 여부</label>
-                            <select id="show_yn" class="form-select bg-dark text-white border-secondary">
-                                <option value="Y">노출 (Y)</option>
-                                <option value="N">숨김 (N)</option>
-                            </select>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-info text-white fw-bold py-2 shadow-sm">챌린지 등록하기</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div id="status" class="mt-4 text-center"></div>
+                    <div class="admin-card fade-in">
+                        <h3 class="h5 mb-4 text-info">✨ 신규 챌린지 등록</h3>
 
-                <div class="text-center mt-5">
-                    <a href="/" class="text-secondary text-decoration-none opacity-50 hover-opacity-100">← 메인 리더보드로 돌아가기</a>
+                        <form id="challengeForm">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small">정답 프롬프트</label>
+                                <textarea id="prompt" class="form-control bg-dark text-white border-secondary" rows="2"
+                                    placeholder="정답 프롬프트를 입력하세요" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small">정답 이미지</label>
+                                <input type="file" id="image_file"
+                                    class="form-control bg-dark text-white border-secondary" accept="image/*" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-secondary small">시작일</label>
+                                    <input type="date" id="start_date"
+                                        class="form-control bg-dark text-white border-secondary" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-secondary small">종료일</label>
+                                    <input type="date" id="end_date"
+                                        class="form-control bg-dark text-white border-secondary" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-secondary small">노출 여부</label>
+                                <select id="show_yn" class="form-select bg-dark text-white border-secondary">
+                                    <option value="Y">노출 (Y)</option>
+                                    <option value="N">숨김 (N)</option>
+                                </select>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-info text-white fw-bold py-2 shadow-sm">챌린지
+                                    등록하기</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="status" class="mt-4 text-center"></div>
+
+                    <div class="text-center mt-5">
+                        <a href="/" class="text-secondary text-decoration-none opacity-50 hover-opacity-100">← 메인 리더보드로
+                            돌아가기</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <%- include('partials/footer') %>
-    <script>
-        const challengeForm = document.getElementById('challengeForm');
-        const statusDiv = document.getElementById('status');
+        <%- include('partials/footer') %>
+            <script>
+                const challengeForm = document.getElementById('challengeForm');
+                const statusDiv = document.getElementById('status');
 
-        challengeForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+                challengeForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
 
-            const formData = new FormData();
-            formData.append('prompt', document.getElementById('prompt').value);
-            formData.append('image_file', document.getElementById('image_file').files[0]);
-            formData.append('start_date', document.getElementById('start_date').value);
-            formData.append('end_date', document.getElementById('end_date').value);
-            formData.append('show_yn', document.getElementById('show_yn').value);
+                    const formData = new FormData();
+                    formData.append('prompt', document.getElementById('prompt').value);
+                    formData.append('image_file', document.getElementById('image_file').files[0]);
+                    formData.append('start_date', document.getElementById('start_date').value);
+                    formData.append('end_date', document.getElementById('end_date').value);
+                    formData.append('show_yn', document.getElementById('show_yn').value);
 
-            statusDiv.className = 'mt-3 text-info small';
-            statusDiv.textContent = '처리 중...';
+                    statusDiv.className = 'mt-3 text-info small';
+                    statusDiv.textContent = '처리 중...';
 
-            try {
-                await axios.post('/api/admin/challenge', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
+                    try {
+                        await axios.post('/api/admin/challenge', formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        });
+                        statusDiv.className = 'mt-3 text-success fw-bold small';
+                        statusDiv.textContent = '✅ 챌린지가 성공적으로 등록되었습니다!';
+                        challengeForm.reset();
+                    } catch (error) {
+                        console.error(error);
+                        statusDiv.className = 'mt-3 text-danger small';
+                        statusDiv.textContent = '❌ 실패: ' + (error.response?.data?.error || '처리 중 오류 발생');
+                    }
                 });
-                statusDiv.className = 'mt-3 text-success fw-bold small';
-                statusDiv.textContent = '✅ 챌린지가 성공적으로 등록되었습니다!';
-                challengeForm.reset();
-            } catch (error) {
-                console.error(error);
-                statusDiv.className = 'mt-3 text-danger small';
-                statusDiv.textContent = '❌ 실패: ' + (error.response?.data?.error || '처리 중 오류 발생');
-            }
-        });
-    </script>
+            </script>
 </body>
+
 </html>
