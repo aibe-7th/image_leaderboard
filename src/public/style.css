@@ -5,12 +5,8 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'Paperlogy-8ExtraBold';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
-    font-weight: 800;
-    font-style: normal;
-}
+/* Paperlogy Font Import (Stable CDN) */
+@import url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css');
 
 :root {
     --accent: #0891b2; /* Darker teal/cyan */
@@ -31,8 +27,18 @@ small, .small {
     font-size: 1rem !important;
 }
 
-h1, .navbar-brand {
-    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+/* Typography Overrides */
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5, .navbar-brand, .nav-link, .btn, .display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    font-family: 'Paperlogy', sans-serif;
+}
+
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+    letter-spacing: -0.02em;
+}
+
+.fw-bold {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 700 !important;
 }
 
 /* Accent Color Overrides */
@@ -96,7 +102,6 @@ h1, .navbar-brand {
         font-size: 0.85rem;
     }
     
-    /* Table specific adjustments for narrow screens */
     .table th, .table td {
         padding: 0.5rem 0.3rem;
     }
@@ -147,38 +152,4 @@ h1, .navbar-brand {
     box-shadow: 0 0 15px rgba(13, 202, 240, 0.5);
     z-index: 10;
     position: relative;
-}
-
-/* Paperlogy Font Import (Noonnu) */
-@font-face {
-    font-family: 'Paperlogy';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
-    font-weight: 800;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Paperlogy';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410@1.0/Paperlogy-7Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-}
-
-/* Typography Overrides */
-h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
-    font-family: 'Paperlogy', sans-serif;
-    letter-spacing: -0.02em;
-}
-
-.navbar-brand, .nav-link, .btn {
-    font-family: 'Paperlogy', sans-serif;
-}
-
-.fw-bold {
-    font-family: 'Paperlogy', sans-serif;
-    font-weight: 700 !important;
-}
-
-.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
-    font-family: 'Paperlogy', sans-serif;
-    font-weight: 800;
 }
