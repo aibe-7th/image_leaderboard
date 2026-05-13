@@ -2,6 +2,7 @@ const form = document.getElementById("submitForm");
 const submitBtn = document.getElementById("submitBtn");
 const statusEl = document.getElementById("status");
 const boardBody = document.getElementById("boardBody");
+const loadingOverlay = document.getElementById("loadingOverlay");
 
 // 리더보드 로드
 async function loadLeaderboard() {
@@ -46,6 +47,8 @@ form.addEventListener("submit", async (e) => {
         image_score: parseFloat(document.getElementById("image_score").value),
     };
 
+    loadingOverlay.classList.remove("d-none");
+
     try {
         const response = await axios.post("/api/submit", payload);
         
@@ -60,6 +63,7 @@ form.addEventListener("submit", async (e) => {
         statusEl.classList.add("text-danger");
     } finally {
         submitBtn.disabled = false;
+        loadingOverlay.classList.add("d-none");
     }
 });
 
