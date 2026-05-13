@@ -1,5 +1,9 @@
 import 'dotenv/config';
 import express from "express";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -10,12 +14,11 @@ if (!PORT) throw new Error("PORT가 감지 되지 않음");
 const RENDER = process.env.RENDER;
 const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
 
+// 정적 파일 서빙 (public/ 폴더)
+app.use(express.static(path.join(__dirname, "../public")));
+
 app.get("/healthz", (_, res) => {
     res.status(200).send("ok");
-});
-
-app.get("/", (_, res) => {
-    res.send("Render(Docker) + Express(Nodemon)");
 });
 
 app.listen(PORT, () => {
