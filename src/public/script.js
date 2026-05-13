@@ -25,8 +25,13 @@ async function loadLeaderboard() {
         const response = await axios.get(`/api/leaderboard?sort=${currentSort}`);
         const rows = response.data;
         
-        sortPromptBtn.innerHTML = currentSort === "prompt" ? "프롬프트 점수 ⬇️" : "프롬프트 점수 ↕️";
-        sortImageBtn.innerHTML = currentSort === "image" ? "이미지 점수 ⬇️" : "이미지 점수 ↕️";
+        if (currentSort === "prompt") {
+            sortPromptBtn.className = "btn btn-info btn-sm text-white fw-bold";
+            sortImageBtn.className = "btn btn-outline-info btn-sm";
+        } else {
+            sortImageBtn.className = "btn btn-info btn-sm text-white fw-bold";
+            sortPromptBtn.className = "btn btn-outline-info btn-sm";
+        }
         
         if (!Array.isArray(rows) || rows.length === 0) {
             boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
