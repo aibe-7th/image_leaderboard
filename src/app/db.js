@@ -25,12 +25,12 @@ export async function insertLeaderboardData(payload) {
 }
 
 export async function getLeaderboardData(sortBy) {
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
         .from("leaderboard")
-        .select("*")
+        .select("*", { count: "exact" })
         .order(sortBy, { ascending: false })
         .order("created_at", { ascending: false });
-    return { data, error };
+    return { data, error, count };
 }
 
 export async function getImageFromStorage(fileName) {
