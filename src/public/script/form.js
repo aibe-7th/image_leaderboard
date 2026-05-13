@@ -28,6 +28,11 @@ async function loadLeaderboard() {
                     <small class="text-secondary opacity-75">${r.ip || "-"}</small>
                 </td>
                 <td class="text-info fw-bold">${r.prompt_score}</td>
+                <td>
+                    <a href="/api/image/${r.image_name}" target="_blank" class="text-info text-decoration-none small">
+                        🖼️ 보기
+                    </a>
+                </td>
                 <td class="text-secondary opacity-75 small">${new Date(r.created_at).toLocaleString()}</td>
             </tr>
         `).join("");
