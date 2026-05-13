@@ -5,6 +5,7 @@ let currentSort = "latest"; // 기본 정렬 기준
 const sortLatestBtn = document.getElementById("sortLatestBtn");
 const sortPromptBtn = document.getElementById("sortPromptBtn");
 const sortImageBtn = document.getElementById("sortImageBtn");
+const sortTotalBtn = document.getElementById("sortTotalBtn");
 
 sortLatestBtn.addEventListener("click", () => {
     currentSort = "latest";
@@ -21,6 +22,11 @@ sortImageBtn.addEventListener("click", () => {
     window.loadLeaderboard();
 });
 
+sortTotalBtn.addEventListener("click", () => {
+    currentSort = "total";
+    window.loadLeaderboard();
+});
+
 // 리더보드 로드
 window.loadLeaderboard = async function() {
     try {
@@ -30,9 +36,10 @@ window.loadLeaderboard = async function() {
         sortLatestBtn.className = currentSort === "latest" ? "btn btn-info btn-sm text-white fw-bold" : "btn btn-outline-info btn-sm";
         sortPromptBtn.className = currentSort === "prompt" ? "btn btn-info btn-sm text-white fw-bold" : "btn btn-outline-info btn-sm";
         sortImageBtn.className = currentSort === "image" ? "btn btn-info btn-sm text-white fw-bold" : "btn btn-outline-info btn-sm";
+        sortTotalBtn.className = currentSort === "total" ? "btn btn-info btn-sm text-white fw-bold" : "btn btn-outline-info btn-sm";
         
         if (!Array.isArray(rows) || rows.length === 0) {
-            boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
+            boardBody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
             return;
         }
         
@@ -61,12 +68,13 @@ window.loadLeaderboard = async function() {
                 <td style="max-width:200px; word-break:break-word;">${r.prompt}</td>
                 <td>${r.prompt_score}</td>
                 <td>${r.image_score}</td>
+                <td><span class="text-info fw-bold">${(Number(r.prompt_score) + Number(r.image_score)).toFixed(2)}</span></td>
                 <td>${formattedDate}</td>
             </tr>
         `}).join("");
     } catch (error) {
         console.error("리더보드 로드 실패:", error);
-        boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">조회 실패</td></tr>`;
+        boardBody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-3">조회 실패</td></tr>`;
     }
 };
 

@@ -73,6 +73,18 @@ router.get("/leaderboard", async (req, res) => {
         return res.status(500).json({ error: "데이터 조회 실패" });
     }
 
+    // 총점 정렬인 경우 서버 메모리에서 직접 정렬
+    if (sortParam === "total" && data) {
+        data.sort((a, b) => {
+            const totalA = Number(a.prompt_score) + Number(a.image_score);
+            const totalB = Number(b.prompt_score) + Number(b.image_score);
+            if (totalB !== totalA) {
+                return totalB - totalA; // 내림차순
+            }
+            return new Date(b.created_at) - new Date(a.created_at); // 동점 시 최신순
+        });
+    }
+
     res.json(data);
 });
 
