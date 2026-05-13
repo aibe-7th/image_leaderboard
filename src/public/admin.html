@@ -40,16 +40,16 @@
                 <h1 class="text-center text-info mb-4 fw-bold">⚙️ Challenge Admin</h1>
                 
                 <!-- Login Section -->
-                <div id="loginSection" class="admin-card fade-in">
+                <form id="loginForm" class="admin-card fade-in">
                     <h3 class="h5 mb-4 text-center text-secondary">관리자 인증이 필요합니다</h3>
                     <div class="mb-3">
                         <label class="form-label">관리자 비밀번호</label>
                         <input type="password" id="adminPass" class="form-control" placeholder="비밀번호를 입력하세요" required>
                     </div>
                     <div class="d-grid mt-4">
-                        <button id="loginBtn" class="btn btn-info text-white fw-bold py-2">로그인</button>
+                        <button type="submit" class="btn btn-info text-white fw-bold py-2">로그인</button>
                     </div>
-                </div>
+                </form>
 
                 <!-- Admin Section (Initially Hidden) -->
                 <div id="adminSection" class="admin-card fade-in hidden">
@@ -101,9 +101,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        const loginSection = document.getElementById('loginSection');
+        const loginForm = document.getElementById('loginForm');
         const adminSection = document.getElementById('adminSection');
-        const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const challengeForm = document.getElementById('challengeForm');
         const statusDiv = document.getElementById('status');
@@ -112,21 +111,32 @@
         function checkSession() {
             const token = sessionStorage.getItem('adminToken');
             if (token) {
-                loginSection.classList.add('hidden');
+                loginForm.classList.add('hidden');
                 adminSection.classList.remove('hidden');
             } else {
-                loginSection.classList.remove('hidden');
+                loginForm.classList.remove('hidden');
                 adminSection.classList.add('hidden');
             }
         }
 
         // 로그인 처리
-        loginBtn.addEventListener('click', async () => {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const password = document.getElementById('adminPass').value;
-            if (!password) return alert('비밀번호를 입력하세요.');
-
+            
             try {
-                const response = await axios.post('/api/admin/login', { password });
+                const response = await axios.post('/api/admin/login', { password }, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                sessionStorage.setItem('adminToken', response.data.token);
+                checkSession();
+                statusDiv.textContent = '';
+                document.getElementById('adminPass').value = '';
+            } catch (error) {
+                console.error('Login Error:', error);
+                alert('로그인 실패: ' + (error.response?.data?.error || '비밀번호를 확인하세요.'));
+            }
+        });
                 sessionStorage.setItem('adminToken', response.data.token);
                 checkSession();
                 statusDiv.textContent = '';
