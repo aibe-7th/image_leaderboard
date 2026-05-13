@@ -37,16 +37,25 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         return await Promise.all(tasks);
     };
 
-    try {
-        let results;
+    const modelsToTry = ["gemma-4-31b-it", "gemma-4-26b-a4b-it", "gemma-2-27b-it", "gemini-1.5-flash"];
+    let results = null;
+    let lastError = null;
+
+    for (const modelName of modelsToTry) {
         try {
-            // 메인 모델 시도
-            results = await _invokeModel("gemma-4-31b-it");
-        } catch (primaryError) {
-            console.warn(`[Fallback] 메인 모델 오류, 폴백 모델 시도: ${primaryError.message}`);
-            // 폴백 모델 시도
-            results = await _invokeModel("gemma-4-26b-a4b-it");
+            console.log(`[AI Scoring] Attempting with model: ${modelName}`);
+            results = await _invokeModel(modelName);
+            if (results && results.length > 0) break; // 성공 시 루프 종료
+        } catch (err) {
+            console.warn(`[Fallback] ${modelName} 실패: ${err.message}`);
+            lastError = err;
         }
+    }
+
+    if (!results) {
+        console.error("AI 채점 최종 실패 (모든 모델 시도 실패):", lastError);
+        return 0;
+    }
         
         // 유효한 점수 추출
         const validScores = results
