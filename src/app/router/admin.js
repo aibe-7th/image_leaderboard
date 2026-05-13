@@ -22,11 +22,21 @@ const adminAuth = (req, res, next) => {
 // 로그인 API
 router.post("/login", (req, res) => {
     const { password } = req.body;
-    if (password === process.env.CHALLENGE_PASS) {
+    const adminPass = process.env.CHALLENGE_PASS;
+
+    if (!password || !adminPass) {
+        console.warn("[Admin] 로그인 시도 실패: 패스워드 누락");
+        return res.status(400).json({ error: "비밀번호를 입력하세요." });
+    }
+
+    // 문자열로 변환 및 공백 제거 후 비교 (타입 불일치 방지)
+    if (String(password).trim() === String(adminPass).trim()) {
         const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
         sessions.add(token);
+        console.log("[Admin] 로그인 성공");
         res.json({ message: "로그인 성공", token });
     } else {
+        console.warn("[Admin] 로그인 실패: 비밀번호 불일치");
         res.status(401).json({ error: "비밀번호가 일치하지 않습니다." });
     }
 });
