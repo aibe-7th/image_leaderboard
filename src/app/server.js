@@ -5,9 +5,20 @@ import path from "path";
 import apiRouter from "./router/index.js";
 import { getOpenChallenges, getLeaderboardData, getChallengeById } from "./db.js";
 
+import session from "express-session";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// 세션 설정
+app.use(session({
+    secret: process.env.CHALLENGE_PASS || "secret-key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // 개발 환경이므로 false, 배포 시 true 권장
+}));
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 
@@ -49,7 +60,30 @@ app.get("/challenge/:id", async (req, res) => {
 
 // SSR 어드민 페이지
 app.get("/admin", (req, res) => {
-    res.render("admin");
+    if (req.session.isAdmin) {
+        res.render("admin");
+    } else {
+        res.render("admin_login", { error: null });
+    }
+});
+
+// 어드민 로그인 처리
+app.post("/admin/login", (req, res) => {
+    const { password } = req.body;
+    const adminPass = process.env.CHALLENGE_PASS || "admin123";
+
+    if (password === adminPass) {
+        req.session.isAdmin = true;
+        res.redirect("/admin");
+    } else {
+        res.render("admin_login", { error: "비밀번호가 올바르지 않습니다." });
+    }
+});
+
+// 어드민 로그아웃
+app.get("/admin/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/admin");
 });
 
 // API 라우터 등록

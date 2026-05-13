@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>Admin Login - Arena</title>
+    <%- include('partials/head') %>
+</head>
+<body class="bg-dark text-light vh-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card bg-black border-info border-opacity-25 rounded-4 p-4 shadow-lg">
+                    <div class="text-center mb-4">
+                        <h1 class="h3 fw-bold text-info mb-2">관리자 로그인</h1>
+                        <p class="text-secondary small">챌린지 관리를 위해 인증이 필요합니다.</p>
+                    </div>
+                    
+                    <form action="/admin/login" method="POST">
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small">비밀번호</label>
+                            <input type="password" name="password" class="form-control bg-dark text-white border-secondary py-2" required autofocus>
+                            <% if (error) { %>
+                                <div class="text-danger small mt-2"><%= error %></div>
+                            <% } %>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-lg w-100 text-white fw-bold py-2">로그인</button>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        <a href="/" class="text-secondary small text-decoration-none">&larr; 메인으로 돌아가기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
