@@ -30,13 +30,13 @@
                         <ol class="small text-secondary mb-0">
                             <li class="mb-2">위 이미지를 보고 어떤 프롬프트로 만들어졌을지 추측해보세요.</li>
                             <li class="mb-2"><a href="https://arena.ai" target="_blank"
-                                    class="text-info fw-bold">arena.ai</a> 등에서 프롬프트를 테스트하고 이미지를 생성해보세요.</li>
+                                     class="text-info fw-bold">arena.ai</a> 등에서 프롬프트를 테스트하고 이미지를 생성해보세요.</li>
                             <li>가장 유사하다고 생각되는 이미지와 프롬프트를 아래 폼에 제출하세요!</li>
                         </ol>
                     </div>
 
                     <!-- Form -->
-                    <div class="card bg-black border-info border-opacity-25 rounded-4 p-4 p-md-5 shadow-lg mb-5">
+                    <div class="card bg-black border-info border-opacity-25 rounded-4 p-4 p-md-5 shadow-lg mb-5 position-relative">
                         <h2 class="h4 text-info mb-4 fw-bold text-center">🚀 지금 바로 도전하기</h2>
                         <form id="submitForm">
                             <input type="hidden" id="challenge_id" value="<%= challenge.id %>">
@@ -81,7 +81,7 @@
                                         <th>순위</th>
                                         <th>닉네임</th>
                                         <th>유사도</th>
-                                        <th>결과</th>
+                                        <th>이미지</th>
                                         <th>일자</th>
                                     </tr>
                                 </thead>
@@ -104,9 +104,11 @@
                                                     <%= r.prompt_score %>
                                                 </td>
                                                 <td>
-                                                    <a href="/api/image/<%= r.image_name %>" target="_blank">
-                                                        <img src="/api/image/<%= r.image_name %>" class="rank-thumb rounded shadow-sm" alt="Result">
-                                                    </a>
+                                                    <img src="/api/image/<%= r.image_name %>" 
+                                                         class="rank-thumb rounded shadow-sm" 
+                                                         alt="Result"
+                                                         style="cursor: pointer;"
+                                                         onclick="openDetailModal('<%= r.name %>', '/api/image/<%= r.image_name %>', `<%= r.prompt %>`)">
                                                 </td>
                                                 <td class="text-secondary opacity-75 small">
                                                     <%= formatDate(r.created_at) %>
@@ -115,8 +117,8 @@
                                             <% }) %>
                                                 <% } else { %>
                                                     <tr>
-                                                        <td colspan="4" class="text-center py-5 text-secondary small">아직
-                                                            도전자가 없습니다. <br> 첫 번째 주인공이 되어보세요!</td>
+                                                        <td colspan="5" class="text-center py-5 text-secondary small">아직
+                                                            도전자 정보가 없습니다. <br> 첫 번째 주인공이 되어보세요!</td>
                                                     </tr>
                                                     <% } %>
                                 </tbody>
@@ -127,8 +129,36 @@
             </div>
         </div>
 
+        <!-- Image Detail Modal -->
+        <div class="modal fade" id="imageDetailModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content bg-dark text-light border-secondary shadow-lg">
+                    <div class="modal-header border-secondary">
+                        <h5 class="modal-title text-info" id="modalUserName">결과 상세 보기</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0 text-center">
+                        <img id="modalImage" src="" class="img-fluid w-100" alt="Result Image">
+                        <div class="p-4 bg-black">
+                            <label class="text-secondary small d-block mb-2">도전 프롬프트</label>
+                            <p id="modalPrompt" class="mb-0 text-info font-monospace" style="word-break: break-all;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openDetailModal(userName, imageUrl, prompt) {
+                document.getElementById('modalUserName').textContent = userName + ' 님의 도전 결과';
+                document.getElementById('modalImage').src = imageUrl;
+                document.getElementById('modalPrompt').textContent = prompt;
+                new bootstrap.Modal(document.getElementById('imageDetailModal')).show();
+            }
+        </script>
+
         <%- include('partials/footer') %>
-            <script src="/script/form.js?v=1.0.1"></script>
+        <script src="/script/form.js?v=1.0.1"></script>
 </body>
 
 </html>

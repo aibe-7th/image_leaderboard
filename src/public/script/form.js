@@ -16,7 +16,7 @@ async function loadLeaderboard() {
         const { data } = response.data;
 
         if (!data || data.length === 0) {
-            leaderboardBody.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-secondary small">아직 도전자가 없습니다. <br> 첫 번째 주인공이 되어보세요!</td></tr>';
+            leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-secondary small">아직 도전자가 없습니다. <br> 첫 번째 주인공이 되어보세요!</td></tr>';
             return;
         }
 
@@ -35,9 +35,11 @@ async function loadLeaderboard() {
                 </td>
                 <td class="text-info fw-bold">${r.prompt_score}</td>
                 <td>
-                    <a href="/api/image/${r.image_name}" target="_blank">
-                        <img src="/api/image/${r.image_name}" class="rank-thumb rounded shadow-sm" alt="Result">
-                    </a>
+                    <img src="/api/image/${r.image_name}" 
+                         class="rank-thumb rounded shadow-sm" 
+                         alt="Result"
+                         style="cursor: pointer;"
+                         onclick="openDetailModal('${r.name}', '/api/image/${r.image_name}', \`${r.prompt}\`)">
                 </td>
                 <td class="text-secondary opacity-75 small">${formatDate(r.created_at)}</td>
             </tr>
