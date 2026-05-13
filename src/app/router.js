@@ -17,8 +17,8 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
         return res.status(400).json({ error: "name, image_file, prompt는 필수입니다." });
     }
 
-    if (prompt.length > 50) {
-        return res.status(400).json({ error: "프롬프트는 한글 기준 50자를 초과할 수 없습니다." });
+    if (prompt.length < 10 || prompt.length > 50) {
+        return res.status(400).json({ error: "프롬프트는 10~50자 사이로 입력해야 합니다." });
     }
 
     if (name.length > 10) {
