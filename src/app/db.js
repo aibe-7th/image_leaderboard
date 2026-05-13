@@ -32,3 +32,10 @@ export async function getLeaderboardData(sortBy) {
         .order("created_at", { ascending: false });
     return { data, error };
 }
+
+export async function getImageFromStorage(fileName) {
+    const { data, error } = await supabase.storage
+        .from("genai_image")
+        .download(fileName);
+    return { data, error };
+}

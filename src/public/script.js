@@ -55,7 +55,11 @@ async function loadLeaderboard() {
             <tr>
                 <td class="fw-bold text-warning">${i + 1}</td>
                 <td>${r.name}</td>
-                <td>${r.image_name}</td>
+                <td>
+                    <a href="/api/image/${r.image_name}" target="_blank">
+                        <img src="/api/image/${r.image_name}" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover; border-radius: 4px;" class="border border-secondary" />
+                    </a>
+                </td>
                 <td style="max-width:200px; word-break:break-word;">${r.prompt}</td>
                 <td>${r.prompt_score}</td>
                 <td>${r.image_score}</td>
