@@ -37,7 +37,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         return await Promise.all(tasks);
     };
 
-    const modelsToTry = ["gemma-4-31b-it", "gemma-4-26b-a4b-it", "gemma-3-27b-it"];
+    const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro"];
     let results = null;
     let lastError = null;
 
@@ -56,7 +56,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         console.error("AI 채점 최종 실패 (모든 모델 시도 실패):", lastError);
         return 0;
     }
-        
+
     // 유효한 점수 추출
     const validScores = results
         .map(r => typeof r.score === 'number' ? r.score : null)
@@ -68,6 +68,6 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
     const avgScore = validScores.reduce((a, b) => a + b, 0) / validScores.length;
 
     console.log(`AI Scoring [${userPrompt}] - Final Score: ${avgScore.toFixed(2)}`);
-    
+
     return parseFloat(avgScore.toFixed(2));
 }
