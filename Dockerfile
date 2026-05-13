@@ -6,8 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 COPY src ./src
-COPY public ./public
 
 USER node
 
-CMD ["node", "src/server.js"]
+CMD ["node", "src/app/server.js"]

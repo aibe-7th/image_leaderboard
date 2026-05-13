@@ -17,10 +17,6 @@ const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
 // 정적 파일 서빙 (public/ 폴더)
 app.use(express.static(path.join(__dirname, "../public")));
 
-app.get("/healthz", (_, res) => {
-    res.status(200).send("ok");
-});
-
 app.listen(PORT, () => {
     console.log(`현재 작동 포트 : ${PORT}`)
     if (RENDER) {
@@ -28,7 +24,6 @@ app.listen(PORT, () => {
     } else {
         console.log(`로컬에서 구동 중 : http://localhost:${PORT}`);
     }
-
 });
 
 export default app;
