@@ -37,7 +37,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         return await Promise.all(tasks);
     };
 
-    const modelsToTry = ["gemma-4-31b-it", "gemma-4-26b-a4b-it", "gemma-3-27b-it", "gemini-1.5-flash"];
+    const modelsToTry = ["gemma-4-31b-it", "gemma-4-26b-a4b-it", "gemma-3-27b-it"];
     let results = null;
     let lastError = null;
 
