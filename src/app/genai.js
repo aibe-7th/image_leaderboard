@@ -46,19 +46,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         if (validScores.length === 0) return 0;
 
         // 평균 계산
-        let avgScore = validScores.reduce((a, b) => a + b, 0) / validScores.length;
-
-        // 2. 출력 기반 정규표현식 스크리닝 (최종 점수 확정 전 검사)
-        const badPatterns = [
-            /[^a-zA-Z0-9가-힣\s,.]/g,
-            /(.)\1{4,}/,
-            /fuck|shit|damn/i
-        ];
-
-        if (badPatterns.some(regex => regex.test(userPrompt))) {
-            console.warn(`[Post-Screening] 부적절한 패턴 감지됨, 점수 0점 처리: ${userPrompt}`);
-            avgScore = 0;
-        }
+        const avgScore = validScores.reduce((a, b) => a + b, 0) / validScores.length;
 
         console.log(`AI Scoring [${userPrompt}] - Raw Scores:`, validScores, "Final:", avgScore.toFixed(2));
         
