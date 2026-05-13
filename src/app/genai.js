@@ -1,10 +1,10 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
-import { PromptTemplate } from "@langchain/core/prompts";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 /**
- * Gemini 2.0 Flash Lite를 사용하여 프롬프트 유사도 점수 계산 (0~50점)
+ * Gemini 2.5 Flash Lite를 사용하여 프롬프트 유사도 점수 계산 (0~50점)
  * Self-Consistency (5회 반복 후 평균) 적용
  */
 export async function calculatePromptScore(userPrompt, targetAnswer) {
@@ -26,26 +26,21 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         })
     );
 
-    const promptTemplate = new PromptTemplate({
-        template: `
-당신은 이미지 생성 프롬프트의 유사도를 평가하는 전문가입니다.
-제공된 '정답 프롬프트'와 '사용자 프롬프트'를 비교하여 의미적, 맥락적 유사도를 0점에서 50점 사이로 평가해 주세요.
+    const chatPrompt = ChatPromptTemplate.fromMessages([
+        ["system", "당신은 이미지 생성 프롬프트의 유사도를 평가하는 전문가입니다. 사용자의 응답은 반드시 지정된 형식을 따라야 합니다.\n\n{format_instructions}"],
+        ["human", "정답 프롬프트: {answer}\n사용자 프롬프트: {user_prompt}"]
+    ]);
 
-- 정답 프롬프트: {answer}
-- 사용자 프롬프트: {user_prompt}
-
-{format_instructions}
-        `,
-        inputVariables: ["answer", "user_prompt"],
-        partialVariables: { format_instructions: parser.getFormatInstructions() },
-    });
-
-    const chain = promptTemplate.pipe(model).pipe(parser);
+    const chain = chatPrompt.pipe(model).pipe(parser);
 
     try {
         // 5회 실행하여 결과 수집 (Self-Consistency)
         const tasks = Array.from({ length: 5 }).map(() =>
-            chain.invoke({ answer: targetAnswer, user_prompt: userPrompt })
+            chain.invoke({ 
+                answer: targetAnswer, 
+                user_prompt: userPrompt,
+                format_instructions: parser.getFormatInstructions()
+            })
         );
 
         const results = await Promise.all(tasks);
