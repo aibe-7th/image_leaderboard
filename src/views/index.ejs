@@ -3,125 +3,65 @@
 <head>
     <title>AI Image Challenge - Arena</title>
     <%- include('partials/head') %>
+    <style>
+        .challenge-item {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .challenge-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+        .challenge-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 2rem;
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body class="bg-dark text-light">
     <%- include('partials/nav') %>
 
     <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-info mb-3">🔥 ARENA CHALLENGES</h1>
+            <p class="text-secondary lead">이미지 속 숨겨진 프롬프트를 맞추고 랭킹에 도전하세요!</p>
+        </div>
+
         <!-- Arena Notice -->
         <div class="arena-notice p-4 rounded-4 text-center mb-5 fade-in">
-            <h2 class="h5 fw-bold text-info mb-2">🎨 나만의 이미지를 만들고 도전해보세요!</h2>
             <p class="mb-0 text-secondary small">
-                아래 리스트 중 도전하고 싶은 챌린지를 선택하세요. <br>
-                이미지 생성이 필요하다면 <a href="https://arena.ai" target="_blank" class="text-info text-decoration-underline fw-bold">arena.ai</a>를 이용해보세요.
+                모든 이미지는 AI로 생성되었습니다. 도전하고 싶은 챌린지를 선택하세요. <br>
+                이미지 생성이 처음이라면 <a href="https://arena.ai" target="_blank" class="text-info text-decoration-underline fw-bold">arena.ai</a>에서 시작해보세요.
             </p>
         </div>
 
-        <!-- Submission Scroll Button -->
-        <div class="text-center mb-5">
-            <button class="btn btn-info btn-lg text-white fw-bold px-5 shadow" onclick="window.scrollToSubmit()">지금 바로 도전하기</button>
-        </div>
-
-        <!-- Challenge List (SSR) -->
-        <div id="challengeList" class="row g-5">
+        <!-- Challenge Grid -->
+        <div class="row g-4">
             <% if (challenges && challenges.length > 0) { %>
-                <% challenges.forEach(challenge => { %>
-                    <div class="col-12 mb-5 fade-in">
-                        <div class="challenge-card">
-                            <div class="row g-0">
-                                <div class="col-lg-5 bg-black d-flex align-items-center justify-content-center border-end border-secondary border-opacity-25 p-3">
-                                    <img src="/api/image/<%= challenge.result_image %>" class="img-fluid rounded-3 shadow" style="max-height: 400px;" alt="Challenge Image">
-                                </div>
-                                <div class="col-lg-7 p-4 p-md-5">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h3 class="h4 text-info fw-bold mb-0">챌린지 #<%= challenge.id %></h3>
-                                        <span class="badge bg-info text-white">진행 중</span>
-                                    </div>
-                                    <p class="text-secondary mb-4">이미지를 보고 가장 유사한 프롬프트를 맞춰보세요. (기간: <%= challenge.start_date %> ~ <%= challenge.end_date %>)</p>
-                                    
-                                    <div class="table-responsive">
-                                        <table class="table table-dark table-hover align-middle leaderboard-table border-secondary border-opacity-25">
-                                            <thead>
-                                                <tr class="text-secondary small">
-                                                    <th>순위</th>
-                                                    <th>이름</th>
-                                                    <th>유사도</th>
-                                                    <th>일자</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% if (challenge.leaderboard && challenge.leaderboard.length > 0) { %>
-                                                    <% challenge.leaderboard.slice(0, 10).forEach((r, i) => { %>
-                                                        <tr>
-                                                            <td class="fw-bold text-warning"><%= i + 1 %></td>
-                                                            <td>
-                                                                <span class="d-block text-white"><%= r.name %></span>
-                                                                <small class="text-secondary" style="font-size: 0.7rem;"><%= r.ip || "-" %></small>
-                                                            </td>
-                                                            <td class="text-info fw-bold"><%= r.prompt_score %></td>
-                                                            <td class="text-secondary" style="font-size: 0.75rem;"><%= new Date(r.created_at).toLocaleDateString() %></td>
-                                                        </tr>
-                                                    <% }) %>
-                                                <% } else { %>
-                                                    <tr><td colspan="4" class="text-center py-3 text-secondary small">첫 번째로 도전해보세요!</td></tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                <% challenges.forEach(c => { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="challenge-card challenge-item h-100 position-relative" onclick="location.href='/challenge/<%= c.id %>'">
+                            <img src="/api/image/<%= c.result_image %>" class="card-img-top" style="height: 300px; object-fit: cover;" alt="Challenge">
+                            <div class="challenge-overlay">
+                                <h3 class="h5 fw-bold text-white mb-1">Challenge #<%= c.id %></h3>
+                                <p class="small text-info mb-0">진행 중 &middot; <%= c.start_date %> ~ <%= c.end_date %></p>
                             </div>
                         </div>
                     </div>
                 <% }) %>
             <% } else { %>
-                <div class="col-12 text-center py-5 text-secondary">현재 진행 중인 챌린지가 없습니다.</div>
+                <div class="col-12 text-center py-5">
+                    <p class="text-secondary">현재 진행 중인 챌린지가 없습니다.</p>
+                </div>
             <% } %>
         </div>
     </div>
 
-    <!-- Submission Section Footer -->
-    <div id="submitAnchor" class="container pb-5">
-        <hr class="opacity-10 my-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card bg-black border-info border-opacity-25 rounded-4 p-4 shadow-lg">
-                    <h2 class="h4 text-info text-center mb-4 fw-bold">챌린지 참여하기</h2>
-                    <form id="submitForm">
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">도전할 챌린지</label>
-                            <select id="challenge_id" class="form-select bg-dark text-white border-secondary" required>
-                                <option value="">챌린지를 선택하세요</option>
-                                <% challenges.forEach(c => { %>
-                                    <option value="<%= c.id %>"><%= c.prompt.substring(0, 20) %>...</option>
-                                <% }) %>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">이름</label>
-                            <input id="name" type="text" class="form-control bg-dark text-white border-secondary" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">나의 결과 이미지</label>
-                            <input id="image_file" type="file" accept="image/*" class="form-control bg-dark text-white border-secondary" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">프롬프트 (10-100자)</label>
-                            <textarea id="prompt" class="form-control bg-dark text-white border-secondary" rows="3" minlength="10" maxlength="100" required></textarea>
-                        </div>
-                        <button type="submit" id="submitBtn" class="btn btn-info btn-lg w-100 text-white fw-bold">유사도 검증 및 제출</button>
-                        <div id="status" class="mt-3 text-center small"></div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <%- include('partials/footer') %>
-    <script src="/script/form.js"></script>
-    <script>
-        window.scrollToSubmit = () => {
-            document.getElementById('submitAnchor').scrollIntoView({ behavior: 'smooth' });
-        };
-    </script>
 </body>
 </html>

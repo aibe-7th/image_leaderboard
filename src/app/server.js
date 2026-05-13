@@ -18,18 +18,31 @@ app.use(express.urlencoded({ extended: true }));
 // 정적 파일 서빙 (CSS, JS, Images)
 app.use(express.static(path.join(__dirname, "../public")));
 
-// SSR 메인 페이지
+// SSR 메인 페이지 (목록)
 app.get("/", async (req, res) => {
     try {
         const { data: challenges } = await getOpenChallenges();
-        const challengesWithBoards = await Promise.all((challenges || []).map(async (c) => {
-            const { data: board } = await getLeaderboardData("prompt_score", c.id);
-            return { ...c, leaderboard: board || [] };
-        }));
-
-        res.render("index", { challenges: challengesWithBoards });
+        res.render("index", { challenges: challenges || [] });
     } catch (err) {
         console.error("SSR 메인 페이지 렌더링 오류:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+// SSR 챌린지 상세 페이지
+app.get("/challenge/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data: challenge } = await getChallengeById(id);
+        
+        if (!challenge) {
+            return res.status(404).send("챌린지를 찾을 수 없습니다.");
+        }
+
+        const { data: leaderboard } = await getLeaderboardData("prompt_score", id);
+        res.render("challenge", { challenge, leaderboard: leaderboard || [] });
+    } catch (err) {
+        console.error("SSR 상세 페이지 렌더링 오류:", err);
         res.status(500).send("Internal Server Error");
     }
 });

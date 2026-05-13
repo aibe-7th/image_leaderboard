@@ -65,16 +65,26 @@ export async function insertChallenge({ prompt, result_image, start_date, end_da
     return { data, error };
 }
 
-// 현재 오픈 중인 모든 챌린지 조회
+// 현재 오픈 중인 모든 챌린지 조회 (보안을 위해 prompt 제외)
 export async function getOpenChallenges() {
     const today = new Date().toISOString().split('T')[0];
     const { data, error } = await supabase
         .from("challenge")
-        .select("*")
+        .select("id, result_image, start_date, end_date, created_at")
         .eq("show_yn", "Y")
         .lte("start_date", today)
         .gte("end_date", today)
         .order("created_at", { ascending: false });
+    return { data, error };
+}
+
+// 특정 챌린지 상세 조회 (보안을 위해 prompt 제외)
+export async function getChallengeById(id) {
+    const { data, error } = await supabase
+        .from("challenge")
+        .select("id, result_image, start_date, end_date, created_at")
+        .eq("id", id)
+        .single();
     return { data, error };
 }
 
