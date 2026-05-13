@@ -34,8 +34,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
     // 2. 고도화된 Structured Output 스키마 정의
     const schema = z.object({
         score: z.number().min(0).max(50).describe("유사도 점수 (0~50, 소수점 활용 권장)"),
-        similarity_analysis: z.string().describe("정답과 사용자 프롬프트 간의 키워드 및 맥락 일치도 분석"),
-        reason: z.string().describe("최종 점수 부여의 구체적인 이유 및 사용자 피드백")
+        similarity_analysis: z.string().describe("정답과 사용자 프롬프트 간의 키워드 및 맥락 일치도 분석")
     });
 
     const modelWithStructuredOutput = model.withStructuredOutput(schema);
@@ -48,7 +47,6 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
 다음 기준에 따라 사용자의 프롬프트를 정교하게 평가해 주세요:
 1. 키워드 일치성: 핵심 명사와 형용사가 얼마나 일치하는가?
 2. 맥락적 유사성: 전체적인 분위기와 상황 묘사가 얼마나 유사한가?
-3. 창의성: 정답의 의도를 유지하면서도 독창적인 묘사가 있는가?
 
 최종 점수는 0~50점 사이에서 소수점 둘째 자리까지 부여하세요.`],
                 ["human", `정답 프롬프트: ${finalTargetAnswer}\n사용자 프롬프트: ${userPrompt}`]
