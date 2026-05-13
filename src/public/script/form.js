@@ -36,7 +36,15 @@ if (form) {
         }
         
         const promptInput = document.getElementById("prompt");
-        formData.append("prompt", promptInput ? promptInput.value.trim() : "");
+        const promptValue = promptInput ? promptInput.value.trim() : "";
+        formData.append("prompt", promptValue);
+
+        console.log("전송할 데이터 확인:", { 
+            name: nameValue, 
+            challenge_id: challengeId, 
+            prompt: promptValue,
+            hasFile: !!(imageInput && imageInput.files && imageInput.files[0])
+        });
 
         if (loadingOverlay && loadingOverlay.classList) {
             loadingOverlay.classList.remove("d-none");

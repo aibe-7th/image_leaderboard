@@ -8,11 +8,14 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/", upload.single("image_file"), async (req, res) => {
+    // 폼 필드는 req.body에, 파일은 req.file에 위치합니다.
     const { name, prompt, challenge_id } = req.body;
     const file = req.file;
 
+    console.log("제출 시도 데이터:", { name, prompt, challenge_id, hasFile: !!file });
+
     if (!name || !file || !prompt || !challenge_id) {
-        return res.status(400).json({ error: "필수 정보(이름, 파일, 프롬프트, 챌린지ID)가 누락되었습니다." });
+        return res.status(400).json({ error: "필수 정보가 누락되었습니다. (이름, 파일, 프롬프트, 챌린지ID)" });
     }
 
     try {
