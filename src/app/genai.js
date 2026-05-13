@@ -14,7 +14,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
     }
 
     const model = new ChatGoogleGenerativeAI({
-        modelName: "gemini-2.0-flash-lite-preview-02-05",
+        modelName: "gemini-2.5-flash-lite",
         apiKey: process.env.GEMINI_API_KEY,
         temperature: 0.7,
     });
