@@ -112,4 +112,11 @@ router.get("/image/:filename", async (req, res) => {
     }
 });
 
+// 오늘의 챌린지 정보 엔드포인트
+router.get("/challenge", (req, res) => {
+    res.json({
+        todayImage: process.env.TODAY_IMAGE
+    });
+});
+
 export default router;

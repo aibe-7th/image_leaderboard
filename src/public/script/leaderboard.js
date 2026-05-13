@@ -78,5 +78,24 @@ window.loadLeaderboard = async function() {
     }
 };
 
+// 오늘의 챌린지 정보 로드
+async function loadChallenge() {
+    try {
+        const response = await axios.get("/api/challenge");
+        const { todayImage } = response.data;
+        
+        if (todayImage) {
+            const challengeSection = document.getElementById("challengeSection");
+            const challengeImage = document.getElementById("challengeImage");
+            
+            challengeImage.src = `/api/image/${todayImage}`;
+            challengeSection.classList.remove("d-none");
+        }
+    } catch (error) {
+        console.error("챌린지 로드 실패:", error);
+    }
+}
+
 // 초기 로드
+loadChallenge();
 window.loadLeaderboard();
