@@ -1,5 +1,10 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config(); // 환경 변수 로드
 import express from "express";
+
+if (!process.env.CHALLENGE_PASS) {
+    console.warn("⚠️ [Warning] CHALLENGE_PASS가 설정되지 않았습니다. .env 파일을 확인하세요.");
+}
 import { fileURLToPath } from "url";
 import path from "path";
 import apiRouter from "./router/index.js";
