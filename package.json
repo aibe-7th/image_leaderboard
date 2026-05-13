@@ -7,11 +7,14 @@
     "nodemon": "^3.1.14"
   },
   "dependencies": {
+    "@langchain/google-genai": "^2.1.30",
     "@supabase/supabase-js": "^2.105.4",
     "dotenv": "^17.4.2",
+    "ejs": "^5.0.2",
     "express": "^5.2.1",
     "langchain": "^1.4.0",
     "multer": "^2.1.1",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "zod": "^4.4.3"
   }
 }

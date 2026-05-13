@@ -3,28 +3,48 @@ import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
 import apiRouter from "./router/index.js";
+import { getOpenChallenges, getLeaderboardData } from "./db.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+
 app.set('trust proxy', true);
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // URL-encoded body 파싱 추가
+app.use(express.urlencoded({ extended: true }));
 
-// https://render.com/docs/environment-variables
-const PORT = Number(process.env.PORT);
-if (!PORT) throw new Error("PORT가 감지 되지 않음");
+// 정적 파일 서빙 (CSS, JS, Images)
+app.use(express.static(path.join(__dirname, "../public")));
 
-const RENDER = process.env.RENDER;
-const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
+// SSR 메인 페이지
+app.get("/", async (req, res) => {
+    try {
+        const { data: challenges } = await getOpenChallenges();
+        const challengesWithBoards = await Promise.all((challenges || []).map(async (c) => {
+            const { data: board } = await getLeaderboardData("prompt_score", c.id);
+            return { ...c, leaderboard: board || [] };
+        }));
 
-// 정적 파일 서빙 (public/ 폴더)
-app.use(express.static(path.join(__dirname, "../public"), {
-    extensions: ["html"]
-}));
+        res.render("index", { challenges: challengesWithBoards });
+    } catch (err) {
+        console.error("SSR 메인 페이지 렌더링 오류:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+// SSR 어드민 페이지
+app.get("/admin", (req, res) => {
+    res.render("admin");
+});
 
 // API 라우터 등록
 app.use("/api", apiRouter);
+
+const PORT = Number(process.env.PORT) || 3000;
+const RENDER = process.env.RENDER;
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
 
 app.listen(PORT, () => {
     console.log(`현재 작동 포트 : ${PORT}`)
