@@ -28,9 +28,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // 공통 변수 설정 (Base URL 및 메타데이터)
 app.use((req, res, next) => {
-    const protocol = process.env.RENDER ? "https" : req.protocol;
-    const host = process.env.RENDER_EXTERNAL_URL || req.get("host");
-    res.locals.baseUrl = `${protocol}://${host}`;
+    let host = process.env.RENDER_EXTERNAL_URL || req.get("host");
+    
+    // 이미 프로토콜이 포함되어 있다면 그대로 사용, 없으면 프로토콜 추가
+    if (host.startsWith('http')) {
+        res.locals.baseUrl = host;
+    } else {
+        const protocol = process.env.RENDER ? "https" : req.protocol;
+        res.locals.baseUrl = `${protocol}://${host}`;
+    }
 
     // 기본 메타데이터
     res.locals.title = "이미지 프롬프트를 맞춰라";
