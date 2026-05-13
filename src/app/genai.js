@@ -12,7 +12,7 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
     }
 
     const model = new ChatGoogleGenerativeAI({
-        modelName: "gemini-2.5-flash-lite",
+        model: "gemini-2.5-flash-lite",
         apiKey: process.env.GEMINI_API_KEY,
         temperature: 0.7,
     });
