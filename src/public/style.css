@@ -5,8 +5,19 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Paperlogy-8ExtraBold';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+}
+
 body {
     font-family: 'Pretendard-Regular', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+h1 {
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
 #loadingOverlay {
