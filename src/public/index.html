@@ -19,6 +19,10 @@
                         <input id="name" type="text" class="form-control bg-dark text-light border-secondary" placeholder="홍길동" required />
                     </div>
                     <div class="mb-3">
+                        <label for="image_name" class="form-label text-light">이미지명</label>
+                        <input id="image_name" type="text" class="form-control bg-dark text-light border-secondary" placeholder="예: result.png" required />
+                    </div>
+                    <div class="mb-3">
                         <label for="prompt" class="form-label text-light">프롬프트</label>
                         <textarea id="prompt" class="form-control bg-dark text-light border-secondary" rows="3" placeholder="사용한 프롬프트를 입력하세요" required></textarea>
                     </div>
@@ -49,6 +53,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>이름</th>
+                                <th>이미지명</th>
                                 <th>프롬프트</th>
                                 <th>프롬프트 점수</th>
                                 <th>이미지 점수</th>
@@ -56,7 +61,7 @@
                             </tr>
                         </thead>
                         <tbody id="boardBody">
-                            <tr><td colspan="6" class="text-center text-secondary py-3">불러오는 중...</td></tr>
+                            <tr><td colspan="7" class="text-center text-secondary py-3">불러오는 중...</td></tr>
                         </tbody>
                     </table>
                 </div>

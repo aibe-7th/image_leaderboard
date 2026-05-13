@@ -27,15 +27,15 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 // 리더보드 제출 엔드포인트
 app.post("/api/submit", async (req, res) => {
-    const { name, prompt, prompt_score, image_score } = req.body;
+    const { name, image_name, prompt, prompt_score, image_score } = req.body;
 
-    if (!name || !prompt) {
-        return res.status(400).json({ error: "name과 prompt는 필수입니다." });
+    if (!name || !image_name || !prompt) {
+        return res.status(400).json({ error: "name, image_name, prompt는 필수입니다." });
     }
 
     const { data, error } = await supabase
         .from("leaderboard")
-        .insert([{ name, prompt, prompt_score, image_score }])
+        .insert([{ name, image_name, prompt, prompt_score, image_score }])
         .select()
         .single();
 

@@ -10,7 +10,7 @@ async function loadLeaderboard() {
         const rows = response.data;
         
         if (!Array.isArray(rows) || rows.length === 0) {
-            boardBody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
+            boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
             return;
         }
         
@@ -18,6 +18,7 @@ async function loadLeaderboard() {
             <tr>
                 <td class="fw-bold text-warning">${i + 1}</td>
                 <td>${r.name}</td>
+                <td>${r.image_name}</td>
                 <td style="max-width:200px; word-break:break-word;">${r.prompt}</td>
                 <td>${r.prompt_score}</td>
                 <td>${r.image_score}</td>
@@ -26,7 +27,7 @@ async function loadLeaderboard() {
         `).join("");
     } catch (error) {
         console.error("리더보드 로드 실패:", error);
-        boardBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-3">조회 실패</td></tr>`;
+        boardBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-3">조회 실패</td></tr>`;
     }
 }
 
@@ -39,6 +40,7 @@ form.addEventListener("submit", async (e) => {
 
     const payload = {
         name: document.getElementById("name").value.trim(),
+        image_name: document.getElementById("image_name").value.trim(),
         prompt: document.getElementById("prompt").value.trim(),
         prompt_score: parseFloat(document.getElementById("prompt_score").value),
         image_score: parseFloat(document.getElementById("image_score").value),
