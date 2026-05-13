@@ -31,9 +31,8 @@ app.use((req, res, next) => {
     const protocol = process.env.RENDER ? "https" : req.protocol;
     const host = process.env.RENDER_EXTERNAL_URL || req.get("host");
     res.locals.baseUrl = `${protocol}://${host}`;
-    
+
     // 기본 메타데이터
-    res.locals.siteName = "Arena";
     res.locals.title = "이미지 프롬프트를 맞춰라";
     res.locals.desc = "AI가 생성한 이미지를 보고 원본 프롬프트를 맞춰보세요. 고득점을 획득하고 리더보드에 이름을 올리세요!";
     next();
@@ -49,7 +48,7 @@ app.get("/", async (req, res) => {
         const challengeIds = (challenges || []).map(c => c.id);
         const participantCounts = await getChallengeParticipantCounts(challengeIds);
 
-        res.render("index", { 
+        res.render("index", {
             challenges: challenges || [],
             participantCounts: participantCounts || {}
         });
@@ -64,14 +63,14 @@ app.get("/challenge/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const { data: challenge } = await getChallengeById(id);
-        
+
         if (!challenge) {
             return res.status(404).send("챌린지를 찾을 수 없습니다.");
         }
 
         const { data: leaderboard } = await getLeaderboardData("prompt_score", id);
-        res.render("challenge", { 
-            challenge, 
+        res.render("challenge", {
+            challenge,
             leaderboard: leaderboard || [],
             title: `Challenge #${challenge.id}`
         });
