@@ -9,43 +9,59 @@
     <style>
         .admin-card {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 2.5rem;
             margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        .form-control {
-            background: rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-        .form-control:focus {
+        .form-control, .form-select {
             background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 0.75rem;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(0, 0, 0, 0.4);
             border-color: #0dcaf0;
             color: #fff;
-            box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.2);
         }
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-dark text-light">
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h1 class="text-center text-info mb-4">⚙️ Challenge Management</h1>
+            <div class="col-md-8 col-lg-6">
+                <h1 class="text-center text-info mb-4 fw-bold">⚙️ Challenge Admin</h1>
                 
-                <div class="admin-card">
-                    <div class="mb-4">
+                <!-- Login Section -->
+                <div id="loginSection" class="admin-card fade-in">
+                    <h3 class="h5 mb-4 text-center text-secondary">관리자 인증이 필요합니다</h3>
+                    <div class="mb-3">
                         <label class="form-label">관리자 비밀번호</label>
-                        <input type="password" id="adminPass" class="form-control" placeholder="CHALLENGE_PASS를 입력하세요">
+                        <input type="password" id="adminPass" class="form-control" placeholder="비밀번호를 입력하세요" required>
                     </div>
+                    <div class="d-grid mt-4">
+                        <button id="loginBtn" class="btn btn-info text-white fw-bold py-2">로그인</button>
+                    </div>
+                </div>
 
-                    <hr class="opacity-25 my-4">
+                <!-- Admin Section (Initially Hidden) -->
+                <div id="adminSection" class="admin-card fade-in hidden">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="h5 mb-0 text-info">✨ 챌린지 등록</h3>
+                        <button id="logoutBtn" class="btn btn-outline-secondary btn-sm">로그아웃</button>
+                    </div>
 
                     <form id="challengeForm">
                         <div class="mb-3">
                             <label class="form-label">정답 프롬프트</label>
-                            <textarea id="prompt" class="form-control" rows="2" required></textarea>
+                            <textarea id="prompt" class="form-control" rows="2" placeholder="정답 프롬프트를 입력하세요" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">정답 이미지</label>
@@ -63,20 +79,21 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label">노출 여부</label>
-                            <select id="show_yn" class="form-select bg-dark text-light border-secondary">
+                            <select id="show_yn" class="form-select">
                                 <option value="Y">노출 (Y)</option>
                                 <option value="N">숨김 (N)</option>
                             </select>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-info text-white fw-bold py-2">챌린지 등록</button>
+                            <button type="submit" class="btn btn-info text-white fw-bold py-2 shadow-sm">챌린지 등록하기</button>
                         </div>
                     </form>
-                    <div id="status" class="mt-3 text-center"></div>
                 </div>
                 
-                <div class="text-center mt-4">
-                    <a href="/" class="text-secondary text-decoration-none">← 메인 리더보드로 돌아가기</a>
+                <div id="status" class="mt-4 text-center"></div>
+
+                <div class="text-center mt-5">
+                    <a href="/" class="text-secondary text-decoration-none opacity-50 hover-opacity-100">← 메인 리더보드로 돌아가기</a>
                 </div>
             </div>
         </div>
@@ -84,16 +101,52 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const loginSection = document.getElementById('loginSection');
+        const adminSection = document.getElementById('adminSection');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
         const challengeForm = document.getElementById('challengeForm');
         const statusDiv = document.getElementById('status');
 
+        // 세션 체크
+        function checkSession() {
+            const token = sessionStorage.getItem('adminToken');
+            if (token) {
+                loginSection.classList.add('hidden');
+                adminSection.classList.remove('hidden');
+            } else {
+                loginSection.classList.remove('hidden');
+                adminSection.classList.add('hidden');
+            }
+        }
+
+        // 로그인 처리
+        loginBtn.addEventListener('click', async () => {
+            const password = document.getElementById('adminPass').value;
+            if (!password) return alert('비밀번호를 입력하세요.');
+
+            try {
+                const response = await axios.post('/api/admin/login', { password });
+                sessionStorage.setItem('adminToken', response.data.token);
+                checkSession();
+                statusDiv.textContent = '';
+            } catch (error) {
+                alert('로그인 실패: ' + (error.response?.data?.error || '비밀번호를 확인하세요.'));
+            }
+        });
+
+        // 로그아웃
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('adminToken');
+            checkSession();
+            statusDiv.textContent = '';
+        });
+
+        // 챌린지 등록
         challengeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const password = document.getElementById('adminPass').value;
-            if (!password) {
-                alert('비밀번호를 입력해주세요.');
-                return;
-            }
+            const token = sessionStorage.getItem('adminToken');
+            if (!token) return checkSession();
 
             const formData = new FormData();
             formData.append('prompt', document.getElementById('prompt').value);
@@ -106,21 +159,28 @@
             statusDiv.textContent = '처리 중...';
 
             try {
-                const response = await axios.post('/api/admin/challenge', formData, {
+                await axios.post('/api/admin/challenge', formData, {
                     headers: {
-                        'Admin-Password': password,
+                        'Admin-Session': token,
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                statusDiv.className = 'mt-3 text-success';
-                statusDiv.textContent = '✅ 등록 성공!';
+                statusDiv.className = 'mt-3 text-success fw-bold';
+                statusDiv.textContent = '✅ 챌린지가 성공적으로 등록되었습니다!';
                 challengeForm.reset();
             } catch (error) {
                 console.error(error);
                 statusDiv.className = 'mt-3 text-danger';
-                statusDiv.textContent = '❌ 실패: ' + (error.response?.data?.error || '알 수 없는 오류');
+                statusDiv.textContent = '❌ 실패: ' + (error.response?.data?.error || '처리 중 오류 발생');
+                if (error.response?.status === 401) {
+                    sessionStorage.removeItem('adminToken');
+                    checkSession();
+                }
             }
         });
+
+        // 초기 실행
+        checkSession();
     </script>
 </body>
 </html>

@@ -6,15 +6,30 @@ import { optimizeImage } from "../util.js";
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 인증 미들웨어
+// 메모리 세션 스토어 (서버 재시작 시 초기화됨)
+const sessions = new Set();
+
+// 인증 미들웨어 (세션 토큰 검증)
 const adminAuth = (req, res, next) => {
-    const password = req.headers["admin-password"];
-    if (password === process.env.CHALLENGE_PASS) {
+    const token = req.headers["admin-session"];
+    if (token && sessions.has(token)) {
         next();
     } else {
-        res.status(401).json({ error: "권한이 없습니다." });
+        res.status(401).json({ error: "세션이 만료되었거나 권한이 없습니다." });
     }
 };
+
+// 로그인 API
+router.post("/login", (req, res) => {
+    const { password } = req.body;
+    if (password === process.env.CHALLENGE_PASS) {
+        const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        sessions.add(token);
+        res.json({ message: "로그인 성공", token });
+    } else {
+        res.status(401).json({ error: "비밀번호가 일치하지 않습니다." });
+    }
+});
 
 // 챌린지 등록 API
 router.post("/challenge", adminAuth, upload.single("image_file"), async (req, res) => {
