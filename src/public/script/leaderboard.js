@@ -39,7 +39,7 @@ async function loadChallengesAndBoards() {
                                     <thead>
                                         <tr class="text-secondary small">
                                             <th>순위</th>
-                                            <th>이름</th>
+                                            <th>닉네임</th>
                                             <th>유사도</th>
                                             <th>일자</th>
                                         </tr>

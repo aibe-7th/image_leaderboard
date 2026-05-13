@@ -1,55 +1,62 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <title>AI Image Challenge - Arena</title>
     <%- include('partials/head') %>
-    <style>
-        .challenge-item {
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .challenge-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-        }
-        .challenge-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 2rem;
-            opacity: 0.9;
-        }
-    </style>
+        <style>
+            .challenge-item {
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .challenge-item:hover {
+                transform: scale(1.02);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            }
+
+            .challenge-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+                padding: 2rem;
+                opacity: 0.9;
+            }
+        </style>
 </head>
+
 <body class="bg-dark text-light">
     <%- include('partials/nav') %>
 
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-info mb-3">🔥 ARENA CHALLENGES</h1>
-            <p class="text-secondary lead">이미지 속 숨겨진 프롬프트를 맞추고 랭킹에 도전하세요!</p>
-        </div>
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-info mb-3">🔥 이미지 프롬프트를 맞춰라</h1>
+                <p class="text-secondary lead">이미지 속 숨겨진 프롬프트를 맞추고 고득점에 도전하세요!</p>
+            </div>
 
-        <!-- Arena Notice -->
-        <div class="arena-notice p-4 rounded-4 text-center mb-5 fade-in">
-            <p class="mb-0 text-secondary small">
-                모든 이미지는 AI로 생성되었습니다. 도전하고 싶은 챌린지를 선택하세요. <br>
-                이미지 생성이 처음이라면 <a href="https://arena.ai" target="_blank" class="text-info text-decoration-underline fw-bold">arena.ai</a>에서 시작해보세요.
-            </p>
-        </div>
-
-        <!-- Challenge Grid -->
-        <div class="row g-4">
+            <!-- Challenge List -->
+        <div class="row g-4 justify-content-center">
             <% if (challenges && challenges.length > 0) { %>
                 <% challenges.forEach(c => { %>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="challenge-card challenge-item h-100 position-relative" onclick="location.href='/challenge/<%= c.id %>'">
-                            <img src="/api/image/<%= c.result_image %>" class="card-img-top" style="height: 300px; object-fit: cover;" alt="Challenge">
-                            <div class="challenge-overlay">
-                                <h3 class="h5 fw-bold text-white mb-1">Challenge #<%= c.id %></h3>
-                                <p class="small text-info mb-0">진행 중 &middot; <%= c.start_date %> ~ <%= c.end_date %></p>
+                    <div class="col-12 col-xl-10 mb-3">
+                        <div class="challenge-card challenge-item overflow-hidden" onclick="location.href='/challenge/<%= c.id %>'">
+                            <div class="row g-0">
+                                <div class="col-md-5 col-lg-4">
+                                    <img src="/api/image/<%= c.result_image %>" class="img-fluid h-100" style="min-height: 250px; object-fit: cover;" alt="Challenge">
+                                </div>
+                                <div class="col-md-7 col-lg-8 p-4 d-flex flex-column justify-content-center">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h3 class="h4 fw-bold text-white mb-0">Challenge #<%= c.id %></h3>
+                                        <span class="badge bg-info text-white">진행 중</span>
+                                    </div>
+                                    <p class="text-secondary mb-3">이 이미지를 생성한 프롬프트는 무엇일까요? 지금 바로 도전해보세요!</p>
+                                    <div class="mt-auto d-flex align-items-center gap-3">
+                                        <small class="text-info"><%= c.start_date %> ~ <%= c.end_date %></small>
+                                        <span class="btn btn-outline-info btn-sm ms-auto px-4">도전하기</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -60,8 +67,9 @@
                 </div>
             <% } %>
         </div>
-    </div>
+        </div>
 
-    <%- include('partials/footer') %>
+        <%- include('partials/footer') %>
 </body>
+
 </html>
