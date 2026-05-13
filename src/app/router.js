@@ -63,7 +63,9 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
 // 리더보드 조회 엔드포인트
 router.get("/leaderboard", async (req, res) => {
     const sortParam = req.query.sort;
-    const sortBy = sortParam === "prompt" ? "prompt_score" : "image_score";
+    let sortBy = "created_at";
+    if (sortParam === "prompt") sortBy = "prompt_score";
+    else if (sortParam === "image") sortBy = "image_score";
 
     const { data, error } = await getLeaderboardData(sortBy);
 

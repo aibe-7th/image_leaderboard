@@ -46,9 +46,10 @@
             <div class="col-lg-10">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="h5 text-secondary mb-0">전체 순위</h2>
-                    <div>
+                    <div class="btn-group" role="group" aria-label="정렬 버튼 그룹">
+                        <button id="sortLatestBtn" class="btn btn-info btn-sm text-white fw-bold">최신순 보기</button>
                         <button id="sortPromptBtn" class="btn btn-outline-info btn-sm">프롬프트 점수 순 보기</button>
-                        <button id="sortImageBtn" class="btn btn-info btn-sm text-white fw-bold">이미지 점수 순 보기</button>
+                        <button id="sortImageBtn" class="btn btn-outline-info btn-sm">이미지 점수 순 보기</button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -57,7 +58,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>이름</th>
-                                <th>이미지명</th>
+                                <th>이미지</th>
                                 <th>프롬프트</th>
                                 <th>프롬프트 점수</th>
                                 <th>이미지 점수</th>
@@ -75,7 +76,8 @@
 
     <!-- Axios CDN -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- Custom Script -->
-    <script src="script.js"></script>
+    <!-- Custom Scripts -->
+    <script src="script/leaderboard.js"></script>
+    <script src="script/form.js"></script>
 </body>
 </html>
