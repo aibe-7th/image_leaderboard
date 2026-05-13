@@ -13,9 +13,10 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         return 0;
     }
 
-    // 1. 최소화된 Structured Output 스키마
+    // 1. Structured Output 스키마
     const schema = z.object({
-        score: z.number().min(0).max(50).describe("유사도 점수 (0~50)")
+        score: z.number().min(0).max(50).describe("유사도 점수 (0~50)"),
+        reason: z.string().describe("채점 이유 (1~2문장)")
     });
 
     // 모델 호출 내부 함수
@@ -24,13 +25,13 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
             model: modelName,
             apiKey: process.env.GEMINI_API_KEY,
             temperature: 0.8,
-            maxOutputTokens: 128,
+            maxOutputTokens: 256,
         });
         const modelWithStructuredOutput = model.withStructuredOutput(schema);
 
         const tasks = Array.from({ length: 3 }).map(() =>
             modelWithStructuredOutput.invoke([
-                ["system", "당신은 프롬프트 유사도 평가 전문가입니다. 정답과 사용자의 프롬프트를 비교하여 0~50점 사이의 점수만 산출하세요. 별도의 설명은 필요 없습니다."],
+                ["system", "당신은 프롬프트 유사도 평가 전문가입니다. 정답과 사용자의 프롬프트를 비교하여 0~50점 사이의 점수와 그 이유를 산출하세요."],
                 ["human", `정답 프롬프트: ${finalTargetAnswer}\n사용자 프롬프트: ${userPrompt}`]
             ])
         );
@@ -54,20 +55,20 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
 
     if (!results) {
         console.error("AI 채점 최종 실패 (모든 모델 시도 실패):", lastError);
-        return 0;
+        return { score: 0, reason: "AI 채점 중 오류가 발생했습니다." };
     }
         
-        // 유효한 점수 추출
-        const validScores = results
-            .map(r => typeof r.score === 'number' ? r.score : null)
-            .filter(s => s !== null);
+    // 유효한 점수 및 이유 추출
+    const validResults = results.filter(r => typeof r.score === 'number');
+    if (validResults.length === 0) return { score: 0, reason: "점수를 산출하지 못했습니다." };
 
-        if (validScores.length === 0) return 0;
+    const avgScore = validResults.reduce((a, b) => a + b.score, 0) / validResults.length;
+    const finalReason = validResults[0].reason || "유사도에 따라 점수가 산출되었습니다.";
 
-        // 평균 계산
-        const avgScore = validScores.reduce((a, b) => a + b, 0) / validScores.length;
-
-        console.log(`AI Scoring [${userPrompt}] - Raw Scores:`, validScores, "Final:", avgScore.toFixed(2));
-        
-        return parseFloat(avgScore.toFixed(2));
+    console.log(`AI Scoring [${userPrompt}] - Final Score: ${avgScore.toFixed(2)}, Reason: ${finalReason}`);
+    
+    return { 
+        score: parseFloat(avgScore.toFixed(2)), 
+        reason: finalReason 
+    };
 }

@@ -36,7 +36,7 @@ router.post("/", upload.single("image_file"), async (req, res) => {
         }
 
         // AI를 사용한 프롬프트 유사도 점수 계산 (0~50)
-        const prompt_score = await calculatePromptScore(prompt, targetAnswer);
+        const { score: prompt_score, reason: score_reason } = await calculatePromptScore(prompt, targetAnswer);
 
         // 이미지 최적화
         const { optimizedImageBuffer, fileName } = await optimizeImage(file.buffer);
@@ -63,7 +63,7 @@ router.post("/", upload.single("image_file"), async (req, res) => {
             return res.status(500).json({ error: "데이터 저장 실패" });
         }
 
-        res.status(201).json({ message: "저장 완료", data });
+        res.status(201).json({ message: "저장 완료", data, score: prompt_score, reason: score_reason });
     } catch (err) {
         console.error("서버 오류 상세:", err);
         const status = err.message === "최적화 후에도 이미지가 1MB를 초과합니다." ? 400 : 500;

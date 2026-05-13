@@ -95,9 +95,14 @@ if (form) {
                 new Promise(resolve => setTimeout(resolve, 3000))
             ]);
             
+            const result = response.data;
             if (statusEl) {
-                statusEl.textContent = "✅ 제출 완료!";
-                if (statusEl.classList) statusEl.classList.add("text-success");
+                statusEl.innerHTML = `
+                    <div class="alert alert-success bg-dark border-success border-opacity-25 rounded-4 p-4 shadow-sm mb-0">
+                        <div class="h5 fw-bold text-success mb-2">🎉 분석 결과: ${result.score}점 / 50점</div>
+                        <div class="text-light opacity-75 small mb-0">${result.reason}</div>
+                    </div>
+                `;
             }
             form.reset();
             
