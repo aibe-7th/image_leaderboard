@@ -4,8 +4,203 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image Leaderboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 32px; color: #7dd3fc; }
+
+        /* Form */
+        form {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 28px;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        label { font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px; display: block; }
+        input, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #7dd3fc; }
+        textarea { resize: vertical; min-height: 80px; }
+        .score-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        button[type="submit"] {
+            padding: 12px;
+            background: #0ea5e9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button[type="submit"]:hover { background: #38bdf8; }
+        button[type="submit"]:active { transform: scale(0.98); }
+        button[type="submit"]:disabled { background: #334155; cursor: not-allowed; }
+
+        #status {
+            font-size: 0.9rem;
+            min-height: 24px;
+            text-align: center;
+        }
+        #status.success { color: #4ade80; }
+        #status.error   { color: #f87171; }
+
+        /* Leaderboard table */
+        .board-wrap {
+            width: 100%;
+            max-width: 720px;
+            overflow-x: auto;
+        }
+        h2 { font-size: 1.2rem; margin-bottom: 16px; color: #94a3b8; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+        th { background: #1e293b; color: #7dd3fc; font-weight: 600; }
+        tbody tr:hover { background: #1e293b88; }
+        .rank { font-weight: 700; color: #f59e0b; }
+    </style>
 </head>
 <body>
-    <h1>Image Leaderboard</h1>
+    <h1>🏆 Image Leaderboard</h1>
+
+    <form id="submitForm">
+        <div>
+            <label for="name">이름</label>
+            <input id="name" type="text" placeholder="홍길동" required />
+        </div>
+        <div>
+            <label for="prompt">프롬프트</label>
+            <textarea id="prompt" placeholder="사용한 프롬프트를 입력하세요" required></textarea>
+        </div>
+        <div class="score-row">
+            <div>
+                <label for="prompt_score">프롬프트 유사도 점수</label>
+                <input id="prompt_score" type="number" step="0.01" min="0" max="999.99" placeholder="0.00" required />
+            </div>
+            <div>
+                <label for="image_score">이미지 유사도 점수</label>
+                <input id="image_score" type="number" step="0.01" min="0" max="999.99" placeholder="0.00" required />
+            </div>
+        </div>
+        <button type="submit" id="submitBtn">제출</button>
+        <p id="status"></p>
+    </form>
+
+    <div class="board-wrap">
+        <h2>전체 순위</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>이름</th>
+                    <th>프롬프트</th>
+                    <th>프롬프트 점수</th>
+                    <th>이미지 점수</th>
+                    <th>일자</th>
+                </tr>
+            </thead>
+            <tbody id="boardBody">
+                <tr><td colspan="6" style="color:#475569;text-align:center">불러오는 중...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const form = document.getElementById("submitForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const statusEl = document.getElementById("status");
+        const boardBody = document.getElementById("boardBody");
+
+        // 리더보드 로드
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch("/api/leaderboard");
+                const rows = await res.json();
+                if (!Array.isArray(rows) || rows.length === 0) {
+                    boardBody.innerHTML = `<tr><td colspan="6" style="color:#475569;text-align:center">아직 데이터가 없습니다.</td></tr>`;
+                    return;
+                }
+                boardBody.innerHTML = rows.map((r, i) => `
+                    <tr>
+                        <td class="rank">${i + 1}</td>
+                        <td>${r.name}</td>
+                        <td style="max-width:200px;word-break:break-word">${r.prompt}</td>
+                        <td>${r.prompt_score}</td>
+                        <td>${r.image_score}</td>
+                        <td>${r.created_at}</td>
+                    </tr>
+                `).join("");
+            } catch (e) {
+                boardBody.innerHTML = `<tr><td colspan="6" style="color:#f87171">조회 실패</td></tr>`;
+            }
+        }
+
+        // 폼 제출
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            statusEl.textContent = "";
+            statusEl.className = "";
+
+            const payload = {
+                name:         document.getElementById("name").value.trim(),
+                prompt:       document.getElementById("prompt").value.trim(),
+                prompt_score: parseFloat(document.getElementById("prompt_score").value),
+                image_score:  parseFloat(document.getElementById("image_score").value),
+            };
+
+            try {
+                const res = await fetch("/api/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || "제출 실패");
+
+                statusEl.textContent = "✅ 제출 완료!";
+                statusEl.className = "success";
+                form.reset();
+                await loadLeaderboard();
+            } catch (err) {
+                statusEl.textContent = `❌ ${err.message}`;
+                statusEl.className = "error";
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        loadLeaderboard();
+    </script>
 </body>
 </html>
