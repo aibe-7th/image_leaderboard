@@ -10,7 +10,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // 리더보드 제출 엔드포인트
 router.post("/submit", upload.single("image_file"), async (req, res) => {
-    const { name, prompt, prompt_score, image_score } = req.body;
+    const { name, prompt } = req.body;
     const file = req.file;
 
     if (!name || !file || !prompt) {
@@ -18,6 +18,9 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
     }
 
     try {
+        // 1~100 사이 랜덤 점수 부여 (소수점 둘째자리)
+        const prompt_score = parseFloat((Math.random() * 99 + 1).toFixed(2));
+        const image_score = parseFloat((Math.random() * 99 + 1).toFixed(2));
         // 이미지 최적화 (util.js)
         const { optimizedImageBuffer, fileName } = await optimizeImage(file.buffer);
 

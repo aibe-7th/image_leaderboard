@@ -82,8 +82,6 @@ form.addEventListener("submit", async (e) => {
     formData.append("name", nameValue);
     formData.append("image_file", document.getElementById("image_file").files[0]);
     formData.append("prompt", document.getElementById("prompt").value.trim());
-    formData.append("prompt_score", document.getElementById("prompt_score").value);
-    formData.append("image_score", document.getElementById("image_score").value);
 
     loadingOverlay.classList.remove("d-none");
 
