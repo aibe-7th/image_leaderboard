@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.set('trust proxy', true);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // URL-encoded body 파싱 추가
 
 // https://render.com/docs/environment-variables
 const PORT = Number(process.env.PORT);

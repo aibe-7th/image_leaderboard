@@ -24,8 +24,13 @@ router.post("/login", (req, res) => {
     const { password } = req.body;
     const adminPass = process.env.CHALLENGE_PASS;
 
+    console.log("[Admin Login Attempt] Body Keys:", Object.keys(req.body || {}));
+
     if (!password || !adminPass) {
-        console.warn("[Admin] 로그인 시도 실패: 패스워드 누락");
+        console.warn("[Admin] 로그인 시도 실패: 데이터 누락", { 
+            hasPassword: !!password, 
+            hasAdminPass: !!adminPass 
+        });
         return res.status(400).json({ error: "비밀번호를 입력하세요." });
     }
 
