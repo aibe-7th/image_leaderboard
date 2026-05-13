@@ -70,8 +70,4 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         console.log(`AI Scoring [${userPrompt}] - Raw Scores:`, validScores, "Final:", avgScore.toFixed(2));
         
         return parseFloat(avgScore.toFixed(2));
-    } catch (error) {
-        console.error("AI 채점 최종 실패 (모든 모델 실패):", error);
-        return 0;
-    }
 }
