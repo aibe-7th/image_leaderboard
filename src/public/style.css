@@ -148,3 +148,37 @@ h1, .navbar-brand {
     z-index: 10;
     position: relative;
 }
+
+/* Paperlogy Font Import (Noonnu) */
+@font-face {
+    font-family: 'Paperlogy';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Paperlogy';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410@1.0/Paperlogy-7Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+    font-family: 'Paperlogy', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.navbar-brand, .nav-link, .btn {
+    font-family: 'Paperlogy', sans-serif;
+}
+
+.fw-bold {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 700 !important;
+}
+
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 800;
+}
