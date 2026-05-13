@@ -32,11 +32,14 @@ router.post("/submit", async (req, res) => {
 });
 
 // 리더보드 조회 엔드포인트
-router.get("/leaderboard", async (_, res) => {
+router.get("/leaderboard", async (req, res) => {
+    const sortParam = req.query.sort;
+    const sortBy = sortParam === "prompt" ? "prompt_score" : "image_score";
+
     const { data, error } = await supabase
         .from("leaderboard")
         .select("*")
-        .order("image_score", { ascending: false });
+        .order(sortBy, { ascending: false });
 
     if (error) {
         return res.status(500).json({ error: "데이터 조회 실패" });

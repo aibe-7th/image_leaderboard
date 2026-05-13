@@ -4,10 +4,25 @@ const statusEl = document.getElementById("status");
 const boardBody = document.getElementById("boardBody");
 const loadingOverlay = document.getElementById("loadingOverlay");
 
+let currentSort = "image"; // 기본 정렬 기준
+
+const sortPromptBtn = document.getElementById("sortPromptBtn");
+const sortImageBtn = document.getElementById("sortImageBtn");
+
+sortPromptBtn.addEventListener("click", () => {
+    currentSort = "prompt";
+    loadLeaderboard();
+});
+
+sortImageBtn.addEventListener("click", () => {
+    currentSort = "image";
+    loadLeaderboard();
+});
+
 // 리더보드 로드
 async function loadLeaderboard() {
     try {
-        const response = await axios.get("/api/leaderboard");
+        const response = await axios.get(`/api/leaderboard?sort=${currentSort}`);
         const rows = response.data;
         
         if (!Array.isArray(rows) || rows.length === 0) {
