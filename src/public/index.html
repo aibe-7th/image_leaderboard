@@ -75,10 +75,8 @@
                         <small class="text-info opacity-75" style="font-size: 0.8rem;">* 정렬 기준 변경 시 1페이지로 이동합니다.</small>
                     </div>
                     <div class="btn-group" role="group" aria-label="정렬 버튼 그룹">
-                        <button id="sortLatestBtn" class="btn btn-info btn-sm text-white fw-bold">최신순 보기</button>
-                        <button id="sortPromptBtn" class="btn btn-outline-info btn-sm">프롬프트 점수 순 보기</button>
-                        <button id="sortImageBtn" class="btn btn-outline-info btn-sm">이미지 점수 순 보기</button>
-                        <button id="sortTotalBtn" class="btn btn-outline-info btn-sm">총점 순 보기</button>
+                        <button id="sortPromptBtn" class="btn btn-info btn-sm text-white fw-bold">유사도 순 보기</button>
+                        <button id="sortLatestBtn" class="btn btn-outline-info btn-sm">최신순 보기</button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -89,15 +87,13 @@
                                 <th>이름</th>
                                 <th>이미지</th>
                                 <th>프롬프트</th>
-                                <th>프롬프트 점수</th>
-                                <th>이미지 점수</th>
-                                <th>총점</th>
+                                <th>유사도 점수</th>
                                 <th>일자</th>
                             </tr>
                         </thead>
                         <tbody id="boardBody">
                             <tr>
-                                <td colspan="8" class="text-center text-secondary py-3">불러오는 중...</td>
+                                <td colspan="6" class="text-center text-secondary py-3">불러오는 중...</td>
                             </tr>
                         </tbody>
                     </table>

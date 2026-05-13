@@ -38,9 +38,6 @@ router.post("/", upload.single("image_file"), async (req, res) => {
         const targetAnswer = process.env.TODAY_ANSWER;
         const prompt_score = await calculatePromptScore(prompt, targetAnswer);
 
-        // 이미지 점수 (0~50 사이 랜덤 부여)
-        const image_score = parseFloat((Math.random() * 49 + 1).toFixed(2));
-
         // 이미지 최적화 (util.js)
         const { optimizedImageBuffer, fileName } = await optimizeImage(file.buffer);
 
@@ -58,7 +55,7 @@ router.post("/", upload.single("image_file"), async (req, res) => {
         const maskedIp = maskIp(userIp);
 
         const { data, error } = await insertLeaderboardData({
-            name, image_name, prompt, prompt_score, image_score, ip: maskedIp
+            name, image_name, prompt, prompt_score, ip: maskedIp
         });
 
         if (error) {
