@@ -72,6 +72,11 @@ if (form) {
             if (window.loadLeaderboard) {
                 await window.loadLeaderboard();
             }
+            
+            // SSR 환경이므로 랭킹 반영을 위해 페이지 새로고침
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } catch (error) {
             console.error("제출 실패:", error);
             const errorMsg = error.response?.data?.error || "제출 실패";
