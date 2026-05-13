@@ -17,8 +17,18 @@ if (form) {
         const nameValue = nameInput ? nameInput.value.trim() : "";
         if (nameValue) sessionStorage.setItem("savedName", nameValue);
 
+        const challengeIdInput = document.getElementById("challenge_id");
+        const challengeId = challengeIdInput ? challengeIdInput.value : null;
+
+        if (!challengeId) {
+            alert("챌린지 ID를 찾을 수 없습니다.");
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+        }
+
         const formData = new FormData();
         formData.append("name", nameValue);
+        formData.append("challenge_id", challengeId);
         
         const imageInput = document.getElementById("image_file");
         if (imageInput && imageInput.files && imageInput.files[0]) {

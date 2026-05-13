@@ -88,6 +88,16 @@ export async function getChallengeById(id) {
     return { data, error };
 }
 
+// 특정 챌린지의 정답(프롬프트) 조회 (서버 사이드 채점용)
+export async function getChallengeAnswer(id) {
+    const { data, error } = await supabase
+        .from("challenge")
+        .select("prompt")
+        .eq("id", id)
+        .single();
+    return { prompt: data?.prompt, error };
+}
+
 // 각 챌린지별 참여자 수 조회
 export async function getChallengeParticipantCounts(challengeIds) {
     if (!challengeIds || challengeIds.length === 0) return {};

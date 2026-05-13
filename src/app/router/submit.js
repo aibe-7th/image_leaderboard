@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { uploadImageToStorage, insertLeaderboardData, checkDuplicatePrompt } from "../db.js";
+import { uploadImageToStorage, insertLeaderboardData, checkDuplicatePrompt, getChallengeAnswer } from "../db.js";
 import { optimizeImage, maskIp } from "../util.js";
 import { calculatePromptScore } from "../genai.js";
 
@@ -8,24 +8,22 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/", upload.single("image_file"), async (req, res) => {
-    const { name, prompt } = req.body;
+    const { name, prompt, challenge_id } = req.body;
     const file = req.file;
 
-    if (!name || !file || !prompt) {
-        return res.status(400).json({ error: "name, image_file, prompt는 필수입니다." });
-    }
-
-    if (prompt.length < 10 || prompt.length > 50) {
-        return res.status(400).json({ error: "프롬프트는 10~50자 사이로 입력해야 합니다." });
-    }
-
-    if (name.length > 10) {
-        return res.status(400).json({ error: "이름은 한글 기준 10자를 초과할 수 없습니다." });
+    if (!name || !file || !prompt || !challenge_id) {
+        return res.status(400).json({ error: "필수 정보(이름, 파일, 프롬프트, 챌린지ID)가 누락되었습니다." });
     }
 
     try {
-        // 중복 프롬프트 확인
-        const { exists, error: checkError } = await checkDuplicatePrompt(prompt);
+        // 챌린지 정답 가져오기
+        const { prompt: targetAnswer, error: answerError } = await getChallengeAnswer(challenge_id);
+        if (answerError || !targetAnswer) {
+            return res.status(404).json({ error: "해당 챌린지 정보를 찾을 수 없습니다." });
+        }
+
+        // 중복 프롬프트 확인 (해당 챌린지 내에서만)
+        const { exists, error: checkError } = await checkDuplicatePrompt(prompt, challenge_id);
         if (checkError) {
             console.error("중복 확인 중 오류:", checkError.message);
             return res.status(500).json({ error: "중복 확인 실패" });
@@ -35,13 +33,12 @@ router.post("/", upload.single("image_file"), async (req, res) => {
         }
 
         // AI를 사용한 프롬프트 유사도 점수 계산 (0~50)
-        const targetAnswer = process.env.TODAY_ANSWER;
         const prompt_score = await calculatePromptScore(prompt, targetAnswer);
 
-        // 이미지 최적화 (util.js)
+        // 이미지 최적화
         const { optimizedImageBuffer, fileName } = await optimizeImage(file.buffer);
 
-        // Supabase 스토리지 업로드 (db.js)
+        // Supabase 스토리지 업로드
         const { error: storageError } = await uploadImageToStorage(fileName, optimizedImageBuffer);
 
         if (storageError) {
@@ -49,13 +46,13 @@ router.post("/", upload.single("image_file"), async (req, res) => {
             return res.status(500).json({ error: "이미지 업로드 실패" });
         }
 
-        // 스토리지에 저장된 파일명을 DB에 저장
+        // 데이터 저장
         const image_name = fileName;
         const userIp = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress;
         const maskedIp = maskIp(userIp);
 
         const { data, error } = await insertLeaderboardData({
-            name, image_name, prompt, prompt_score, ip: maskedIp
+            name, image_name, prompt, prompt_score, ip: maskedIp, challenge_id
         });
 
         if (error) {
