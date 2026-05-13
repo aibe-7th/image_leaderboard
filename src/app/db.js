@@ -24,10 +24,16 @@ export async function insertLeaderboardData(payload) {
     return { data, error };
 }
 
-export async function getLeaderboardData(sortBy) {
-    const { data, error, count } = await supabase
+export async function getLeaderboardData(sortBy, challengeId) {
+    let query = supabase
         .from("leaderboard")
-        .select("*", { count: "exact" })
+        .select("*", { count: "exact" });
+
+    if (challengeId) {
+        query = query.eq("challenge_id", challengeId);
+    }
+
+    const { data, error, count } = await query
         .order(sortBy, { ascending: false })
         .order("created_at", { ascending: false });
     return { data, error, count };
@@ -40,11 +46,12 @@ export async function getImageFromStorage(fileName) {
     return { data, error };
 }
 
-export async function checkDuplicatePrompt(prompt) {
+export async function checkDuplicatePrompt(prompt, challengeId) {
     const { data, error } = await supabase
         .from("leaderboard")
         .select("id")
         .eq("prompt", prompt)
+        .eq("challenge_id", challengeId)
         .limit(1);
     return { exists: data && data.length > 0, error };
 }
@@ -58,8 +65,8 @@ export async function insertChallenge({ prompt, result_image, start_date, end_da
     return { data, error };
 }
 
-// 현재 활성화된 챌린지 조회
-export async function getActiveChallenge() {
+// 현재 오픈 중인 모든 챌린지 조회
+export async function getOpenChallenges() {
     const today = new Date().toISOString().split('T')[0];
     const { data, error } = await supabase
         .from("challenge")
@@ -67,9 +74,7 @@ export async function getActiveChallenge() {
         .eq("show_yn", "Y")
         .lte("start_date", today)
         .gte("end_date", today)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
+        .order("created_at", { ascending: false });
     return { data, error };
 }
 
