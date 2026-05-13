@@ -8,20 +8,34 @@ import { z } from "zod";
 export async function calculatePromptScore(userPrompt, targetAnswer) {
     const finalTargetAnswer = targetAnswer || process.env.TODAY_ANSWER || "사막 위를 헤엄치는 투명 유리 고래와 노을빛 먼지 폭풍";
 
+    // 1. 정규표현식 스크리닝 (부적절한 패턴 또는 무의미한 문자열 필터링)
+    const badPatterns = [
+        /[^a-zA-Z0-9가-힣\s,.]/g, // 허용되지 않는 특수문자 (간단한 예시)
+        /(.)\1{4,}/,             // 동일 문자 5회 이상 반복 (예: aaaaa)
+        /fuck|shit|damn/i       // 기본적인 금지어 (확장 가능)
+    ];
+
+    if (badPatterns.some(regex => regex.test(userPrompt))) {
+        console.warn(`[Screening] 부적절한 프롬프트 감지됨: ${userPrompt}`);
+        return 0; // 스크리닝 위반 시 즉시 0점 처리
+    }
+
     if (!process.env.GEMINI_API_KEY) {
         console.error("GEMINI_API_KEY가 설정되지 않았습니다.");
         return parseFloat((Math.random() * 50).toFixed(2));
     }
 
     const model = new ChatGoogleGenerativeAI({
-        model: "gemma-4-26b",
+        model: "gemma-4-31b-it",
         apiKey: process.env.GEMINI_API_KEY,
         temperature: 0.8, // 다양성 확보를 위해 약간 높임
     });
 
+    // 2. 고도화된 Structured Output 스키마 정의
     const schema = z.object({
         score: z.number().min(0).max(50).describe("유사도 점수 (0~50, 소수점 활용 권장)"),
-        reason: z.string().describe("점수 부여 이유 (구체적 분석)")
+        similarity_analysis: z.string().describe("정답과 사용자 프롬프트 간의 키워드 및 맥락 일치도 분석"),
+        reason: z.string().describe("최종 점수 부여의 구체적인 이유 및 사용자 피드백")
     });
 
     const modelWithStructuredOutput = model.withStructuredOutput(schema);
@@ -30,7 +44,13 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         // 3회 실행하여 결과 수집 (Self-Consistency)
         const tasks = Array.from({ length: 3 }).map(() =>
             modelWithStructuredOutput.invoke([
-                ["system", "당신은 이미지 생성 프롬프트의 유사도를 평가하는 전문가입니다. 정답과 사용자의 프롬프트를 의미적, 맥락적으로 비교하여 0~50점 사이로 평가하세요. 변별력을 위해 소수점 둘째 자리까지 정밀하게 점수를 부여하세요."],
+                ["system", `당신은 프롬프트 유사도 평가 전문가입니다. 
+다음 기준에 따라 사용자의 프롬프트를 정교하게 평가해 주세요:
+1. 키워드 일치성: 핵심 명사와 형용사가 얼마나 일치하는가?
+2. 맥락적 유사성: 전체적인 분위기와 상황 묘사가 얼마나 유사한가?
+3. 창의성: 정답의 의도를 유지하면서도 독창적인 묘사가 있는가?
+
+최종 점수는 0~50점 사이에서 소수점 둘째 자리까지 부여하세요.`],
                 ["human", `정답 프롬프트: ${finalTargetAnswer}\n사용자 프롬프트: ${userPrompt}`]
             ])
         );
@@ -47,7 +67,8 @@ export async function calculatePromptScore(userPrompt, targetAnswer) {
         // 평균 계산 (소수점 2자리)
         const avgScore = validScores.reduce((a, b) => a + b, 0) / validScores.length;
 
-        console.log(`AI Scoring Results [${userPrompt}]:`, validScores, "Final Avg:", avgScore.toFixed(2));
+        console.log(`AI Scoring [${userPrompt}] - Raw Scores:`, validScores, "Final:", avgScore.toFixed(2));
+        if (results[0]) console.log(`[Analysis]: ${results[0].similarity_analysis}`);
 
         return parseFloat(avgScore.toFixed(2));
     } catch (error) {
