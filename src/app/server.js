@@ -18,7 +18,9 @@ const RENDER = process.env.RENDER;
 const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
 
 // 정적 파일 서빙 (public/ 폴더)
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../public"), {
+    extensions: ["html"]
+}));
 
 // API 라우터 등록
 app.use("/api", apiRouter);
