@@ -6,13 +6,9 @@ import { optimizeImage } from "../util.js";
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 메모리 세션 스토어 (서버 재시작 시 초기화됨)
-const sessions = new Set();
-
-// 인증 미들웨어 (세션 토큰 검증)
+// 인증 미들웨어 (세션 검증)
 const adminAuth = (req, res, next) => {
-    const token = req.headers["admin-session"];
-    if (token && sessions.has(token)) {
+    if (req.session && req.session.isAdmin) {
         next();
     } else {
         res.status(401).json({ error: "세션이 만료되었거나 권한이 없습니다." });
