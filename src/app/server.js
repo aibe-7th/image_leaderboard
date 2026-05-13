@@ -26,6 +26,14 @@ app.set('trust proxy', true);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 공통 변수 설정 (Base URL)
+app.use((req, res, next) => {
+    const protocol = process.env.RENDER ? "https" : req.protocol;
+    const host = process.env.RENDER_EXTERNAL_URL || req.get("host");
+    res.locals.baseUrl = `${protocol}://${host}`;
+    next();
+});
+
 // 정적 파일 서빙 (CSS, JS, Images)
 app.use(express.static(path.join(__dirname, "../public")));
 
