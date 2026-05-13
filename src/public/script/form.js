@@ -98,9 +98,8 @@ if (form) {
             const result = response.data;
             if (statusEl) {
                 statusEl.innerHTML = `
-                    <div class="alert alert-success bg-dark border-success border-opacity-25 rounded-4 p-4 shadow-sm mb-0">
-                        <div class="h5 fw-bold text-success mb-2">🎉 분석 결과: ${result.score}점 / 50점</div>
-                        <div class="text-light opacity-75 small mb-0">${result.reason}</div>
+                    <div class="alert alert-success bg-dark border-success border-opacity-25 rounded-4 p-4 shadow-sm mb-0 text-center">
+                        <div class="h5 fw-bold text-success mb-0">🎉 분석 결과: ${result.score}점 / 50점</div>
                     </div>
                 `;
             }
