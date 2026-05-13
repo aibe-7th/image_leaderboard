@@ -1,7 +1,8 @@
 import express from "express";
 import multer from "multer";
-import { uploadImageToStorage, insertLeaderboardData, getLeaderboardData, getImageFromStorage } from "./db.js";
+import { uploadImageToStorage, insertLeaderboardData, getLeaderboardData, getImageFromStorage, checkDuplicatePrompt } from "./db.js";
 import { optimizeImage, maskIp } from "./util.js";
+import { calculatePromptScore } from "./genai.js";
 
 const router = express.Router();
 
@@ -26,9 +27,22 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
     }
 
     try {
-        // 1~100 사이 랜덤 점수 부여 (소수점 둘째자리)
-        const prompt_score = parseFloat((Math.random() * 99 + 1).toFixed(2));
-        const image_score = parseFloat((Math.random() * 99 + 1).toFixed(2));
+        // 중복 프롬프트 확인
+        const { exists, error: checkError } = await checkDuplicatePrompt(prompt);
+        if (checkError) {
+            console.error("중복 확인 중 오류:", checkError.message);
+            return res.status(500).json({ error: "중복 확인 실패" });
+        }
+        if (exists) {
+            return res.status(400).json({ error: "이미 동일한 프롬프트가 존재합니다. 자신만의 독창적인 프롬프트를 입력해 주세요!" });
+        }
+        // AI를 사용한 프롬프트 유사도 점수 계산 (0~50)
+        const targetAnswer = process.env.TODAY_ANSWER
+        const prompt_score = await calculatePromptScore(prompt, targetAnswer);
+
+        // 이미지 점수 (0~50 사이 랜덤 부여)
+        const image_score = parseFloat((Math.random() * 49 + 1).toFixed(2));
+
         // 이미지 최적화 (util.js)
         const { optimizedImageBuffer, fileName } = await optimizeImage(file.buffer);
 
@@ -45,7 +59,7 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
         const userIp = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress;
         const maskedIp = maskIp(userIp);
 
-        const { data, error } = await insertLeaderboardData({ 
+        const { data, error } = await insertLeaderboardData({
             name, image_name, prompt, prompt_score, image_score, ip: maskedIp
         });
 
@@ -56,7 +70,7 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
 
         res.status(201).json({ message: "저장 완료", data });
     } catch (err) {
-        console.error("서버 오류:", err.message || err);
+        console.error("서버 오류 상세:", err);
         const status = err.message === "최적화 후에도 이미지가 1MB를 초과합니다." ? 400 : 500;
         res.status(status).json({ error: err.message || "서버 처리 중 오류 발생" });
     }

@@ -39,3 +39,12 @@ export async function getImageFromStorage(fileName) {
         .download(fileName);
     return { data, error };
 }
+
+export async function checkDuplicatePrompt(prompt) {
+    const { data, error } = await supabase
+        .from("leaderboard")
+        .select("id")
+        .eq("prompt", prompt)
+        .limit(1);
+    return { exists: data && data.length > 0, error };
+}
