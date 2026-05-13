@@ -88,3 +88,23 @@ export async function getChallengeById(id) {
     return { data, error };
 }
 
+// 각 챌린지별 참여자 수 조회
+export async function getChallengeParticipantCounts(challengeIds) {
+    if (!challengeIds || challengeIds.length === 0) return {};
+
+    const { data, error } = await supabase
+        .from("leaderboard")
+        .select("challenge_id")
+        .in("challenge_id", challengeIds);
+    
+    if (error) {
+        console.error("참여자 수 조회 실패:", error);
+        return {};
+    }
+
+    const counts = {};
+    data.forEach(item => {
+        counts[item.challenge_id] = (counts[item.challenge_id] || 0) + 1;
+    });
+    return counts;
+}

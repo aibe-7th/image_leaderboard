@@ -3,7 +3,7 @@ import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
 import apiRouter from "./router/index.js";
-import { getOpenChallenges, getLeaderboardData, getChallengeById } from "./db.js";
+import { getOpenChallenges, getLeaderboardData, getChallengeById, getChallengeParticipantCounts } from "./db.js";
 
 import session from "express-session";
 
@@ -33,7 +33,13 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.get("/", async (req, res) => {
     try {
         const { data: challenges } = await getOpenChallenges();
-        res.render("index", { challenges: challenges || [] });
+        const challengeIds = (challenges || []).map(c => c.id);
+        const participantCounts = await getChallengeParticipantCounts(challengeIds);
+
+        res.render("index", { 
+            challenges: challenges || [],
+            participantCounts: participantCounts || {}
+        });
     } catch (err) {
         console.error("SSR 메인 페이지 렌더링 오류:", err);
         res.status(500).send("Internal Server Error");
