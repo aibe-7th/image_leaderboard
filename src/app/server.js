@@ -41,6 +41,19 @@ app.use((req, res, next) => {
     // 기본 메타데이터
     res.locals.title = "이미지 프롬프트를 맞춰라";
     res.locals.desc = "AI가 생성한 이미지를 보고 원본 프롬프트를 맞춰보세요. 고득점을 획득하고 리더보드에 이름을 올리세요!";
+    // 날짜 포맷터 추가 (yyyy/mm/dd HH:mm:ss)
+    res.locals.formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        const pad = (n) => n.toString().padStart(2, '0');
+        const yyyy = d.getFullYear();
+        const mm = pad(d.getMonth() + 1);
+        const dd = pad(d.getDate());
+        const hh = pad(d.getHours());
+        const min = pad(d.getMinutes());
+        const ss = pad(d.getSeconds());
+        return `${yyyy}/${mm}/${dd} ${hh}:${min}:${ss}`;
+    };
+
     next();
 });
 

@@ -20,6 +20,12 @@ async function loadLeaderboard() {
             return;
         }
 
+        const formatDate = (dateStr) => {
+            const d = new Date(dateStr);
+            const pad = (n) => n.toString().padStart(2, '0');
+            return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        };
+
         leaderboardBody.innerHTML = data.map((r, i) => `
             <tr>
                 <td class="fw-bold text-warning">${i + 1}</td>
@@ -33,7 +39,7 @@ async function loadLeaderboard() {
                         <img src="/api/image/${r.image_name}" class="rank-thumb rounded shadow-sm" alt="Result">
                     </a>
                 </td>
-                <td class="text-secondary opacity-75 small">${new Date(r.created_at).toLocaleString()}</td>
+                <td class="text-secondary opacity-75 small">${formatDate(r.created_at)}</td>
             </tr>
         `).join("");
     } catch (error) {
