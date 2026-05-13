@@ -89,7 +89,7 @@ async function loadChallenge() {
             const challengeImage = document.getElementById("challengeImage");
             
             challengeImage.src = `/api/image/${todayImage}`;
-            challengeSection.classList.remove("d-none");
+            challengeSection.style.display = "flex";
         }
     } catch (error) {
         console.error("챌린지 로드 실패:", error);

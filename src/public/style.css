@@ -12,6 +12,11 @@
     font-style: normal;
 }
 
+:root {
+    --accent: #0891b2; /* Darker teal/cyan */
+    --accent-hover: #0e7490;
+}
+
 body {
     font-family: 'Pretendard-Regular', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -19,6 +24,28 @@ body {
 h1 {
     font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
+
+/* Accent Color Overrides */
+.text-info { color: var(--accent) !important; }
+.btn-info { 
+    background-color: var(--accent) !important; 
+    border-color: var(--accent) !important; 
+    color: white !important; 
+}
+.btn-info:hover { 
+    background-color: var(--accent-hover) !important; 
+    border-color: var(--accent-hover) !important; 
+}
+.btn-outline-info { 
+    color: var(--accent) !important; 
+    border-color: var(--accent) !important; 
+}
+.btn-outline-info:hover { 
+    background-color: var(--accent) !important; 
+    color: white !important; 
+}
+.border-info { border-color: var(--accent) !important; }
+.bg-info { background-color: var(--accent) !important; }
 
 #loadingOverlay {
     position: fixed;
