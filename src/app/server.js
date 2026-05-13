@@ -16,7 +16,7 @@ app.use(session({
     secret: process.env.CHALLENGE_PASS || "secret-key",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // 개발 환경이므로 false, 배포 시 true 권장
+    cookie: { secure: !!process.env.RENDER } // Render 배포 환경(HTTPS)에서만 true 적용
 }));
 
 app.set('view engine', 'ejs');
