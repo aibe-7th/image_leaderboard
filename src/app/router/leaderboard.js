@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     const offset = (page - 1) * limit;
 
     let sortBy = "created_at";
-    if (sort === "prompt") sortBy = "prompt_score";
+    if (sort === "prompt" || sort === "prompt_score") sortBy = "prompt_score";
 
     try {
         const { data, count, error } = await getLeaderboardData(sortBy, challengeId);
