@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { uploadImageToStorage, insertLeaderboardData, getLeaderboardData, getImageFromStorage } from "./db.js";
-import { optimizeImage } from "./util.js";
+import { optimizeImage, maskIp } from "./util.js";
 
 const router = express.Router();
 
@@ -42,9 +42,11 @@ router.post("/submit", upload.single("image_file"), async (req, res) => {
 
         // 스토리지에 저장된 파일명을 DB에 저장
         const image_name = fileName;
+        const userIp = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+        const maskedIp = maskIp(userIp);
 
         const { data, error } = await insertLeaderboardData({ 
-            name, image_name, prompt, prompt_score, image_score 
+            name, image_name, prompt, prompt_score, image_score, ip: maskedIp
         });
 
         if (error) {

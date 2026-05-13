@@ -16,3 +16,29 @@ export async function optimizeImage(fileBuffer) {
 
     return { optimizedImageBuffer, fileName };
 }
+
+/**
+ * IP 주소 마스킹 (한국 법률 준수)
+ * IPv4: 17~24비트 영역(3번째 마디) 마스킹
+ */
+export function maskIp(ip) {
+    if (!ip) return "unknown";
+    
+    // IPv4
+    if (ip.includes('.')) {
+        const parts = ip.split('.');
+        if (parts.length === 4) {
+            return `${parts[0]}.${parts[1]}.***.${parts[3]}`;
+        }
+    }
+    
+    // IPv6 (보통 앞 2마디 유지)
+    if (ip.includes(':')) {
+        const parts = ip.split(':');
+        if (parts.length > 2) {
+            return `${parts[0]}:${parts[1]}:****:****`;
+        }
+    }
+    
+    return ip;
+}

@@ -7,6 +7,7 @@ import apiRouter from "./router.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+app.set('trust proxy', true);
 app.use(express.json());
 
 // https://render.com/docs/environment-variables
