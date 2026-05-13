@@ -50,7 +50,11 @@ form.addEventListener("submit", async (e) => {
     loadingOverlay.classList.remove("d-none");
 
     try {
-        const response = await axios.post("/api/submit", payload);
+        // API 요청과 최소 3초 대기를 동시에 실행 (스피너 최소 3초 노출 보장)
+        const [response] = await Promise.all([
+            axios.post("/api/submit", payload),
+            new Promise(resolve => setTimeout(resolve, 3000))
+        ]);
         
         statusEl.textContent = "✅ 제출 완료!";
         statusEl.classList.add("text-success");
