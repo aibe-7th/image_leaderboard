@@ -39,7 +39,7 @@ window.loadLeaderboard = async function() {
         sortTotalBtn.className = currentSort === "total" ? "btn btn-info btn-sm text-white fw-bold" : "btn btn-outline-info btn-sm";
         
         if (!Array.isArray(rows) || rows.length === 0) {
-            boardBody.innerHTML = `<tr><td colspan="9" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
+            boardBody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary py-3">아직 데이터가 없습니다.</td></tr>`;
             return;
         }
         
@@ -59,8 +59,10 @@ window.loadLeaderboard = async function() {
             return `
             <tr>
                 <td class="fw-bold text-warning">${i + 1}</td>
-                <td>${r.name}</td>
-                <td class="text-secondary" style="font-size: 0.85rem;">${r.ip || "-"}</td>
+                <td>
+                    ${r.name}<br>
+                    <small class="text-secondary" style="font-size: 0.75rem;">${r.ip || "-"}</small>
+                </td>
                 <td>
                     <a href="/api/image/${r.image_name}" target="_blank">
                         <img src="/api/image/${r.image_name}" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover; border-radius: 4px;" class="border border-secondary" />
@@ -75,7 +77,7 @@ window.loadLeaderboard = async function() {
         `}).join("");
     } catch (error) {
         console.error("리더보드 로드 실패:", error);
-        boardBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger py-3">조회 실패</td></tr>`;
+        boardBody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-3">조회 실패</td></tr>`;
     }
 };
 
