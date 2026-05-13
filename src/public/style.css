@@ -131,3 +131,20 @@ h1, .navbar-brand {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent);
 }
+
+/* Leaderboard Thumbnail */
+.rank-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rank-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.5);
+    z-index: 10;
+    position: relative;
+}

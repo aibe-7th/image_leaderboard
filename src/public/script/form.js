@@ -29,8 +29,8 @@ async function loadLeaderboard() {
                 </td>
                 <td class="text-info fw-bold">${r.prompt_score}</td>
                 <td>
-                    <a href="/api/image/${r.image_name}" target="_blank" class="text-info text-decoration-none small">
-                        🖼️ 보기
+                    <a href="/api/image/${r.image_name}" target="_blank">
+                        <img src="/api/image/${r.image_name}" class="rank-thumb rounded shadow-sm" alt="Result">
                     </a>
                 </td>
                 <td class="text-secondary opacity-75 small">${new Date(r.created_at).toLocaleString()}</td>
