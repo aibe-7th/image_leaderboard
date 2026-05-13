@@ -2,6 +2,39 @@ const form = document.getElementById("submitForm");
 const submitBtn = document.getElementById("submitBtn");
 const statusEl = document.getElementById("status");
 const loadingOverlay = document.getElementById("loadingOverlay");
+const leaderboardBody = document.getElementById("leaderboardBody");
+
+// 리더보드 페칭 로드 함수
+async function loadLeaderboard() {
+    const challengeIdInput = document.getElementById("challenge_id");
+    const challengeId = challengeIdInput ? challengeIdInput.value : null;
+    
+    if (!challengeId || !leaderboardBody) return;
+
+    try {
+        const response = await axios.get(`/api/leaderboard?challenge_id=${challengeId}&sort=prompt_score`);
+        const { data } = response.data;
+
+        if (!data || data.length === 0) {
+            leaderboardBody.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-secondary small">아직 도전자가 없습니다. <br> 첫 번째 주인공이 되어보세요!</td></tr>';
+            return;
+        }
+
+        leaderboardBody.innerHTML = data.map((r, i) => `
+            <tr>
+                <td class="fw-bold text-warning">${i + 1}</td>
+                <td>
+                    <span class="d-block text-white">${r.name}</span>
+                    <small class="text-secondary opacity-75">${r.ip || "-"}</small>
+                </td>
+                <td class="text-info fw-bold">${r.prompt_score}</td>
+                <td class="text-secondary opacity-75">${new Date(r.created_at).toLocaleDateString()}</td>
+            </tr>
+        `).join("");
+    } catch (error) {
+        console.error("리더보드 로드 실패:", error);
+    }
+}
 
 // 폼 제출
 if (form) {
@@ -39,13 +72,6 @@ if (form) {
         const promptValue = promptInput ? promptInput.value.trim() : "";
         formData.append("prompt", promptValue);
 
-        console.log("전송할 데이터 확인:", { 
-            name: nameValue, 
-            challenge_id: challengeId, 
-            prompt: promptValue,
-            hasFile: !!(imageInput && imageInput.files && imageInput.files[0])
-        });
-
         if (loadingOverlay && loadingOverlay.classList) {
             loadingOverlay.classList.remove("d-none");
         }
@@ -69,14 +95,9 @@ if (form) {
                 nameInputRef.value = sessionStorage.getItem("savedName");
             }
             
-            if (window.loadLeaderboard) {
-                await window.loadLeaderboard();
-            }
+            // 랭킹 즉시 업데이트 (페칭 방식)
+            await loadLeaderboard();
             
-            // SSR 환경이므로 랭킹 반영을 위해 페이지 새로고침
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
         } catch (error) {
             console.error("제출 실패:", error);
             const errorMsg = error.response?.data?.error || "제출 실패";
@@ -92,6 +113,9 @@ if (form) {
         }
     });
 }
+
+// 전역 함수로 등록 (필요시)
+window.loadLeaderboard = loadLeaderboard;
 
 // 페이지 로드 시 sessionStorage에서 이름 가져와 기본값으로 설정
 const savedName = sessionStorage.getItem("savedName");
